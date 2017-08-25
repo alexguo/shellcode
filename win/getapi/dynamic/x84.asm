@@ -172,7 +172,9 @@ gapi_l0x:
     db     65h              ; gs:
     dec    eax
     mov    edi, [edx]
+    dec    eax
     mov    edi, [edi+24]
+    dec    eax
     mov    edi, [edi+16]
     jmp    gapi_l2x
 

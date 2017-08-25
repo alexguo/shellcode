@@ -34,6 +34,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "include/portable.h"
+
 #ifndef _MSC_VER
 #ifdef __i386__
 /* for x86 only */
@@ -55,28 +57,6 @@ unsigned __int64 __readgsqword(unsigned long Offset)
 }
 #endif
 #endif
-
-#define U8V(v)  ((uint8_t)(v)  & 0xFFU)
-#define U16V(v) ((uint16_t)(v) & 0xFFFFU)
-#define U32V(v) ((uint32_t)(v) & 0xFFFFFFFFUL)
-#define U64V(v) ((uint64_t)(v) & 0xFFFFFFFFFFFFFFFFULL)
-
-#define ROTL8(v, n) \
-  (U8V((v) << (n)) | ((v) >> (8 - (n))))
-
-#define ROTL16(v, n) \
-  (U16V((v) << (n)) | ((v) >> (16 - (n))))
-
-#define ROTL32(v, n) \
-  (U32V((v) << (n)) | ((v) >> (32 - (n))))
-
-#define ROTL64(v, n) \
-  (U64V((v) << (n)) | ((v) >> (64 - (n))))
-
-#define ROTR8(v, n) ROTL8(v, 8 - (n))
-#define ROTR16(v, n) ROTL16(v, 16 - (n))
-#define ROTR32(v, n) ROTL32(v, 32 - (n))
-#define ROTR64(v, n) ROTL64(v, 64 - (n))
 
 #define RVA2VA(type, base, rva) (type)((ULONG_PTR) base + rva)
 
@@ -100,7 +80,7 @@ typedef struct _RTL_USER_PROCESS_PARAMETERS {
 typedef struct _PEB_LDR_DATA {
   ULONG      Length;
   BOOL       Initialized;
-  PVOID      SsHandle;
+  LPVOID     SsHandle;
   LIST_ENTRY InLoadOrderModuleList;
   LIST_ENTRY InMemoryOrderModuleList;
   LIST_ENTRY InInitializationOrderModuleList;
@@ -111,8 +91,8 @@ typedef struct _LDR_DATA_TABLE_ENTRY
   LIST_ENTRY     InLoadOrderLinks;
   LIST_ENTRY     InMemoryOrderLinks;
   LIST_ENTRY     InInitializationOrderLinks;
-  PVOID          DllBase;
-  PVOID          EntryPoint;
+  LPVOID         DllBase;
+  LPVOID         EntryPoint;
   ULONG          SizeOfImage;
   UNICODE_STRING FullDllName;
   UNICODE_STRING BaseDllName;
@@ -126,6 +106,7 @@ typedef struct _PEB {
 
   LPVOID                       Mutant;
 	LPVOID                       ImageBaseAddress;
+
 	PPEB_LDR_DATA                Ldr;
 	PRTL_USER_PROCESS_PARAMETERS ProcessParameters;
 	LPVOID                       SubSystemData;
