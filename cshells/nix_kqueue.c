@@ -99,36 +99,47 @@ int main(void)
         
         // initialize structure
         EV_SET(&fdlist[0], s, EVFILT_READ, 
-            EV_ADD | EV_ENABLE | EV_CLEAR, 0, 0, 0);
+            EV_ADD | EV_CLEAR, 0, 0, 0);
             
         EV_SET(&fdlist[1], out[0], EVFILT_READ, 
-            EV_ADD | EV_ENABLE | EV_CLEAR, 0, 0, 0);
+            EV_ADD | EV_CLEAR, 0, 0, 0);
         
-        for (end=0;!end;)
+        for (end=0; !end;)
         {
           nev=kevent(kq, fdlist, 2, evlist, 2, NULL);
           
-          if (nev > 0)
-          {
-            if (evlist[0].flags & EV_EOF) break;
-            
-            for (i=0; i<nev; i++)
-            {
-              if (evlist[i].flags & EV_ERROR) {
-                end=1;
-                break;
-              }
-              if (evlist[i].ident == s)
-              {
-                len=read(s, buf, BUFSIZ);
-                write(in[1], buf, len);
-              } else if (evlist[i].ident == out[0])
-              {
-                len=read(out[0], buf, BUFSIZ);
-                write(s, buf, len);
-              }
-            }
+          if (nev <= 0) {
+            break;
           }
+          
+          for (i=0; i<nev; i++)
+          {
+            flgs = evlist[i].flags;
+            
+            if (flgs & EV_EOF) {
+              end=1;
+              break;
+            }
+            if (flgs & EV_ERROR) {             
+              end=1;
+              break;
+            }
+            // socket?
+            if (evlist[i].ident == s)
+            {
+              // receive incoming data
+              len = read(s, buf, BUFSIZ);
+   
+              // write to stdout 
+              write(in[1], buf, len);
+            } else 
+            if (evlist[i].ident == out[0])
+            {
+              len = read(out[0], buf, BUFSIZ);
+              // send to remote peer
+              write(s, buf, len);
+            }
+          } // end for
         }
         close(kq);
       }

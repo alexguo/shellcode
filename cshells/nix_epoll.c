@@ -94,16 +94,15 @@ int main(void)
       // attempt connection to remote host
       connect(s, (struct sockaddr*)&sa, sizeof(sa));
       
-      if ((efd=epoll_create1(0)) > 0)
+      if ((efd = epoll_create1(0)) > 0)
       {
         h[0] = s;
         h[1] = out[0];
         
         // add 2 descriptors to monitor
-        for (i=0; i<2; i++)
-        {
+        for (i=0; i<2; i++) {
           evt.data.fd = h[i];
-          evt.events  = EPOLLIN | EPOLLET;
+          evt.events  = EPOLLIN;;
           
           epoll_ctl(efd, EPOLL_CTL_ADD, h[i], &evt);
         }
@@ -113,34 +112,43 @@ int main(void)
         {
           r=epoll_wait(efd, evts, 1, -1);
           
-          if (r<0) {
+          if (r<=0) {
             break;
           }
-          
+           
           for (i=0; i<r; i++) 
           {
             // disconnection/error?
             if ((evts[i].events & EPOLLERR) ||
-                (evts[i].events & EPOLLHUP)) 
+                (evts[i].events & EPOLLHUP) ||
+                (!(evts[i].events & EPOLLIN))) 
             {
               end=1;
+              break;
             } else 
-            // read is available?
+            // read available?
             if (evts[i].events & EPOLLIN) 
             {
               // socket?
               if (evts[i].data.fd == s)
               {
-                len=read(s, buf, BUFSIZ);
+                // receive data from remote
+                len = read(s, buf, BUFSIZ);                              
+                // write to stdin
                 write(in[1], buf, len);
               } else {
-                // stdout/stderr
-                len=read(out[0], buf, BUFSIZ);
-                write(s, buf, len);
+                // read from stdout/stderr
+                len = read(out[0], buf, BUFSIZ);
+                // send to remote system
+                write(s, buf, len);                
               }
             }
           }
         }
+        // remove 2 descriptors 
+        for (i=0; i<2; i++) {
+          epoll_ctl(efd, EPOLL_CTL_DEL, h[i], NULL);
+        }                  
         close(efd);
       }
       kill(pid, SIGCHLD);
