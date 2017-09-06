@@ -29,9 +29,8 @@
 ;    
     bits   32
     
-    mov    eax, ~0x00000000 & 0xFFFFFFFF
+    xor    eax, eax
     mov    edx, ~0xD2040002 & 0xFFFFFFFF
-    not    eax
     not    edx
     push   eax          ; sa.sin_addr = ADDR_ANY
     push   edx          ; sa.sin_port = 1234, sa.sin_family=AF_INET

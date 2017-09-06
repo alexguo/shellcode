@@ -1,3 +1,5 @@
+
+// linux 32-bit config for tcp shells
 #define RS_IP_OFS    6
 #define RS_PORT_OFS  2
 

