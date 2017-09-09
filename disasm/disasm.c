@@ -29,7 +29,7 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 #define WINDOWS
-#define snprintf _snprintf
+//#define snprintf _snprintf
 #endif
   
 #ifdef _MSC_VER
@@ -189,16 +189,20 @@ void get_max(disasm_opt *opt)
   size_t        len;
   int           r;
   
+  printf ("cs_open\n");
   cs_open(opt->arch, opt->mode, &handle);
   
   if (opt->arch==CS_ARCH_X86) {
+    printf ("cs_option\n");
     cs_option(handle, CS_OPT_SYNTAX, opt->syntax);
   }
     
+  printf ("cs_malloc\n");  
   insn = (cs_insn*)cs_malloc(handle);
   
   for (;;)
   {
+    printf ("cs_iter\n");
     r = cs_disasm_iter(handle, &code, &code_len, &address, insn); 
 
     // failed to disassemble?
@@ -224,7 +228,9 @@ void get_max(disasm_opt *opt)
       opt->max_bytes = (len>opt->max_bytes) ? len : opt->max_bytes;   
     }
   }
+  printf ("cs_free\n");
   cs_free(insn, 1);
+  printf ("cs_close\n");
   cs_close(&handle);    
 }
 
@@ -656,11 +662,12 @@ int main (int argc, char *argv[])
 
   // mode specified?
   if (mode != NULL) {
+    opt.mode = 0;   // reset mode
     if (!set_mode(&opt, mode)) {
       printf ("\ninvalid mode specified\n");
       return 0;
     }
-  } else {  
+  } /**else {  
     // ensure our mode is compatible with architecture
     switch (opt.arch) {
       case CS_ARCH_ARM: 
@@ -678,7 +685,7 @@ int main (int argc, char *argv[])
         opt.mode_desc="";
         break;        
     }
-  }
+  }*/
   // endianess?
   if (endian != NULL) {
     if (!set_endian(&opt, endian)) {
