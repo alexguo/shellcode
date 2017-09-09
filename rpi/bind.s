@@ -24,7 +24,7 @@ _start:
     
     // bind(s, &sa, sizeof(sa));  
     mov    r2, #16      // r2 = sizeof(sa)
-    add    r1, pc, #sa - $       // r1 = &sa     
+    adr    r1, sa       // r1 = &sa     
     add    r7, #1       // r7 = 281+1 = 282 = bind
     svc    1
   
