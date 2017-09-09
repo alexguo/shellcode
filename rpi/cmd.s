@@ -21,7 +21,7 @@ _start:
     adr    r0, sh         // r0 = "/bin/sh"
     strb   r2, [r0, #7]   // add null terminator
 
-    mov    r1, '-c'    
+    mov    r1, #'-c'    
     mov    r7, #11        // r7 = execve
     svc    1
     nop                   // align by 4 bytes
