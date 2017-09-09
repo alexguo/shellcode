@@ -19,6 +19,7 @@ _start:
     adr    r0, sh         // r0 = "/bin/sh"
     eor    r1, r1, r1     // r1 = NULL
     eor    r2, r2, r2     // r2 = NULL
+    strb   r2, [r0, #7]   // add null terminator    
     mov    r7, #11        // r7 = execve
     svc    1
     nop                   // align by 4 bytes

