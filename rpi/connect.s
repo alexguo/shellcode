@@ -24,9 +24,8 @@ _start:
     mov    r6, r0       // r6 = s
     adr    r1, sin_port // r1 = sa.sin_port
     ldr    r1, [r1]
+    ldr    r2, [r1, #4]
     //mvn    r1, r1
-    adr    r2, sin_addr // r2 = sa.sin_addr
-    ldr    r2, [r2]
     //mvn    r2, r2
     push   {r1, r2}
     mov    r1, sp       // r1 = &sa
