@@ -70,7 +70,3 @@ sin_port:
 sh:    
 .ascii "/bin/shX"
 
-
-
-
-

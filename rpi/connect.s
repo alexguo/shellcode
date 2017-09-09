@@ -56,7 +56,3 @@ sin_addr:
 sh:  
 .ascii "/bin/shX"
 
-
-
-
-
