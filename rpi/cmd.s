@@ -25,7 +25,7 @@ _start:
     strb   r3, [r1, #2]   // add null terminator
 
     adr    r2, cmd        // r4 = cmd
-    strb   r3, [r2, #13]
+    strb   r3, [r2, #18]
     
     push   {r0, r1, r2, r3}
     eor    r2, r2, r2     // penv = NULL
@@ -37,4 +37,5 @@ sh:
 c_arg:
 .ascii "-cXX"
 cmd:
-.ascii "ncat -4 localhost 1234" // connect to localhost:1234
+.ascii "echo Hello, World!"
+
