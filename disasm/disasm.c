@@ -69,7 +69,7 @@
 
 typedef struct opt_endian_t {
   int n;
-  const char *s, *desc;
+  char *s, *desc;
 } endian_t;
 
 endian_t opt_endian[]=
@@ -79,7 +79,7 @@ endian_t opt_endian[]=
 // output format options 
 typedef struct opt_fmt_t {
   int n;
-  const char *s;
+  char *s;
 } format_t;
 
 format_t opt_formats[]=
@@ -89,7 +89,7 @@ format_t opt_formats[]=
 // syntax options
 typedef struct opt_syntax_t {
   int n;
-  const char *s;
+  char *s;
 } syntax_t;
 
 syntax_t opt_syntax[]=
@@ -100,7 +100,7 @@ syntax_t opt_syntax[]=
 typedef struct opt_mode_t {
   int a;
   int n;
-  const char *s;
+  char *s;
 } mode_opt_t;
   
 mode_opt_t opt_mode[]=
@@ -122,7 +122,7 @@ mode_opt_t opt_mode[]=
 // architecture options
 typedef struct _arch_opt_t {
   int n;
-  const char *s, *desc;
+  char *s, *desc;
 } arch_t;
 
 arch_t opt_arch[]=
@@ -139,7 +139,7 @@ arch_t opt_arch[]=
 typedef struct disasm_opt_t {
   int    arch, mode, syntax;
   int    ofs, hex, fmt;
-  const char   *file, *arch_desc, *mode_desc, *endian_desc;
+  char   *file, *arch_desc, *mode_desc, *endian_desc;
   #ifdef WINDOWS
     HANDLE fd, map;
     LPVOID *mem;
@@ -286,7 +286,7 @@ void disasm (disasm_opt *opt)
     cs_option(handle, CS_OPT_SYNTAX, opt->syntax);
   }
   
-  insn = cs_malloc(handle);
+  insn = (cs_insn*)cs_malloc(handle);
   
   if (insn==NULL) {
     printf ("\nerror allocating memory for instruction\n");    
@@ -665,7 +665,7 @@ int main (int argc, char *argv[])
     switch (opt.arch) {
       case CS_ARCH_ARM: 
       case CS_ARCH_ARM64: 
-        opt.mode=CS_MODE_ARM;
+        //opt.mode=CS_MODE_ARM;
         break;        
       case CS_ARCH_MIPS: 
         opt.mode=CS_MODE_MIPS32;
