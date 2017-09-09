@@ -46,7 +46,7 @@ _start:
     add    r7, #1       // r7 = 284+1 = 285 = accept    
     svc    1    
     
-    mov    r7, r0       // r7 = r
+    mov    r6, r0       // r7 = r
     
     // dup(r, FILENO_STDIN);
     // dup(r, FILENO_STDOUT);
@@ -54,7 +54,7 @@ _start:
     mov    r1, #2       // for 3 descriptors
 dup_loop:
     mov    r7, #63      // r7 = dup 
-    mov    r0, r7       // r0 = r
+    mov    r0, r6       // r0 = r
     svc    1
     sub    r1, #1       // 
     bpl    dup_loop
