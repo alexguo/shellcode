@@ -1,6 +1,6 @@
 /**
-  reverse connect shell
-  tested on raspberry pi 3
+  reverse connect shell to 127.0.0.1:1234
+  tested with linux running on raspberry pi 3  
 */
 
     .global _start

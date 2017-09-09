@@ -1,5 +1,6 @@
 /**
-
+  execute /bin/sh
+  tested on raspberry pi 3  
 */
 
     .global _start

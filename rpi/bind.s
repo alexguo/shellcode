@@ -1,5 +1,5 @@
 /**
-  reverse connect shell
+  bind shell to port 1234
   tested on raspberry pi 3
 */
 
