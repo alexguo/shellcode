@@ -25,7 +25,8 @@ _start:
     // bind(s, &sa, sizeof(sa));  
     mov    r2, #16      // r2 = sizeof(sa)
     ldr    r1, sin_port // r1 = sa.sin_port
-    push   {r1, r2}
+    eor    r3, r3, r3
+    push   {r1, r3}
     mov    r1, sp       // r1 = &sa 
     //mvn    r1, r1    
     add    r7, #1       // r7 = 281+1 = 282 = bind
