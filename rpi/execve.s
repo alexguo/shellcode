@@ -1,6 +1,8 @@
 /**
   execute /bin/sh
-  tested with linux running on raspberry pi 3  
+  tested with linux running on raspberry pi 3 
+
+  http://modexp.wordpress.com/   
 */
 
     .global _start
@@ -19,6 +21,6 @@ _start:
     eor    r2, r2, r2     // r2 = NULL
     mov    r7, #11        // r7 = execve
     svc    1
-    nop
+    nop                   // align by 4 bytes
 sh:    
 .ascii "/bin/sh"
