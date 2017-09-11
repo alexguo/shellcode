@@ -1,6 +1,6 @@
 /**
   execute /bin/sh
-  tested with linux running on raspberry pi 3 
+  tested with linux running on ubuntu
 
   http://modexp.wordpress.com/   
 */

