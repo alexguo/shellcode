@@ -10,11 +10,10 @@
 
 _start:
     // execve("/bin/sh", NULL, NULL);
-    adr    x0, sh         // r0 = "/bin/sh"
-    eor    x1, x1, x1     // r1 = NULL
-    eor    x2, x2, x2     // r2 = NULL
-    //strb   w2, [x0, #7]   // add null terminator
-    mov    x8, #221        // r7 = execve
+    adr    x0, sh         // x0 = "/bin/sh"
+    eor    x1, x1, x1     // x1 = NULL
+    eor    x2, x2, x2     // x2 = NULL
+    mov    x8, #221       // x8 = execve
     svc    1
 sh:    
     .ascii "/bin/sh\0"
