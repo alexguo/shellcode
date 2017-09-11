@@ -9,12 +9,6 @@
     .text
 
 _start:
-    // switch to thumb mode
-    .code 32
-    add    r3, pc, #1
-    bx     r3 
-  
-    .code 16
     // s = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     eor    r2, r2, r2  // r2 = IPPROTO_IP
     mov    r1, #1      // r1 = SOCK_STREAM
