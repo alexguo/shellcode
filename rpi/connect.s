@@ -30,9 +30,9 @@ _start:
     add    r7, #2       // r7 = 281+2 = connect
     svc    1
   
-    // dup(s, FILENO_STDIN);
-    // dup(s, FILENO_STDOUT);
-    // dup(s, FILENO_STDERR);
+    // dup2(s, FILENO_STDIN);
+    // dup2(s, FILENO_STDOUT);
+    // dup2(s, FILENO_STDERR);
     mov    r1, #2      // for 3 descriptors
 dup_loop:
     mov    r7, #63     // r7 = dup 

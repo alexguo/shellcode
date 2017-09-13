@@ -48,9 +48,9 @@ _start:
     
     mov    r6, r0       // r7 = r
     
-    // dup(r, FILENO_STDIN);
-    // dup(r, FILENO_STDOUT);
-    // dup(r, FILENO_STDERR);
+    // dup2(r, FILENO_STDIN);
+    // dup2(r, FILENO_STDOUT);
+    // dup2(r, FILENO_STDERR);
     mov    r1, #2       // for 3 descriptors
 dup_loop:
     mov    r7, #63      // r7 = dup 
