@@ -40,7 +40,7 @@
 unsigned long __readfsdword(unsigned long Offset)
 {
    unsigned long ret;
-   __asm__ volatile ("movl	%%fs:%1,%0"
+   __asm__ volatile ("movl  %%fs:%1,%0"
      : "=r" (ret) ,"=m" ((*(volatile long *) Offset)));
    return ret;
 }
@@ -49,7 +49,7 @@ unsigned long __readfsdword(unsigned long Offset)
 unsigned __int64 __readgsqword(unsigned long Offset)
 {
    void *ret;
-   __asm__ volatile ("movq	%%gs:%1,%0"
+   __asm__ volatile ("movq  %%gs:%1,%0"
      : "=r" (ret) ,"=m" ((*(volatile long *) (unsigned __int64) Offset)));
    return (unsigned __int64) ret;
 }
@@ -125,81 +125,81 @@ typedef struct _PEB {
   BYTE                         _SYSTEM_DEPENDENT_01;
 
   LPVOID                       Mutant;
-	LPVOID                       ImageBaseAddress;
-	PPEB_LDR_DATA                Ldr;
-	PRTL_USER_PROCESS_PARAMETERS ProcessParameters;
-	LPVOID                       SubSystemData;
-	LPVOID                       ProcessHeap;
-	LPVOID                       FastPebLock;
+  LPVOID                       ImageBaseAddress;
+  PPEB_LDR_DATA                Ldr;
+  PRTL_USER_PROCESS_PARAMETERS ProcessParameters;
+  LPVOID                       SubSystemData;
+  LPVOID                       ProcessHeap;
+  LPVOID                       FastPebLock;
   LPVOID                       _SYSTEM_DEPENDENT_02;
-	LPVOID                       _SYSTEM_DEPENDENT_03;
-	LPVOID                       _SYSTEM_DEPENDENT_04;
+  LPVOID                       _SYSTEM_DEPENDENT_03;
+  LPVOID                       _SYSTEM_DEPENDENT_04;
   union {
     LPVOID                     KernelCallbackTable;
     LPVOID                     UserSharedInfoPtr;
   };  
   DWORD                        SystemReserved;
-	DWORD                        _SYSTEM_DEPENDENT_05;
-	LPVOID                       _SYSTEM_DEPENDENT_06;
-	LPVOID                       TlsExpansionCounter;
-	LPVOID                       TlsBitmap;
-	DWORD                        TlsBitmapBits[2];
-	LPVOID                       ReadOnlySharedMemoryBase;
-	LPVOID                       _SYSTEM_DEPENDENT_07;
-	LPVOID                       ReadOnlyStaticServerData;
-	LPVOID                       AnsiCodePageData;
-	LPVOID                       OemCodePageData;
-	LPVOID                       UnicodeCaseTableData;
-	DWORD                        NumberOfProcessors;
-	union
-	{
-		DWORD                      NtGlobalFlag;
-		LPVOID                     dummy02;
-	};
-	LARGE_INTEGER                CriticalSectionTimeout;
-	LPVOID                       HeapSegmentReserve;
-	LPVOID                       HeapSegmentCommit;
-	LPVOID                       HeapDeCommitTotalFreeThreshold;
-	LPVOID                       HeapDeCommitFreeBlockThreshold;
-	DWORD                        NumberOfHeaps;
-	DWORD                        MaximumNumberOfHeaps;
-	LPVOID                       ProcessHeaps;
-	LPVOID                       GdiSharedHandleTable;
-	LPVOID                       ProcessStarterHelper;
-	LPVOID                       GdiDCAttributeList;
-	LPVOID                       LoaderLock;
-	DWORD                        OSMajorVersion;
-	DWORD                        OSMinorVersion;
-	WORD                         OSBuildNumber;
-	WORD                         OSCSDVersion;
-	DWORD                        OSPlatformId;
-	DWORD                        ImageSubsystem;
-	DWORD                        ImageSubsystemMajorVersion;
-	LPVOID                       ImageSubsystemMinorVersion;
-	union
-	{
-		LPVOID                     ImageProcessAffinityMask;
-		LPVOID                     ActiveProcessAffinityMask;
-	};
+  DWORD                        _SYSTEM_DEPENDENT_05;
+  LPVOID                       _SYSTEM_DEPENDENT_06;
+  LPVOID                       TlsExpansionCounter;
+  LPVOID                       TlsBitmap;
+  DWORD                        TlsBitmapBits[2];
+  LPVOID                       ReadOnlySharedMemoryBase;
+  LPVOID                       _SYSTEM_DEPENDENT_07;
+  LPVOID                       ReadOnlyStaticServerData;
+  LPVOID                       AnsiCodePageData;
+  LPVOID                       OemCodePageData;
+  LPVOID                       UnicodeCaseTableData;
+  DWORD                        NumberOfProcessors;
+  union
+  {
+    DWORD                      NtGlobalFlag;
+    LPVOID                     dummy02;
+  };
+  LARGE_INTEGER                CriticalSectionTimeout;
+  LPVOID                       HeapSegmentReserve;
+  LPVOID                       HeapSegmentCommit;
+  LPVOID                       HeapDeCommitTotalFreeThreshold;
+  LPVOID                       HeapDeCommitFreeBlockThreshold;
+  DWORD                        NumberOfHeaps;
+  DWORD                        MaximumNumberOfHeaps;
+  LPVOID                       ProcessHeaps;
+  LPVOID                       GdiSharedHandleTable;
+  LPVOID                       ProcessStarterHelper;
+  LPVOID                       GdiDCAttributeList;
+  LPVOID                       LoaderLock;
+  DWORD                        OSMajorVersion;
+  DWORD                        OSMinorVersion;
+  WORD                         OSBuildNumber;
+  WORD                         OSCSDVersion;
+  DWORD                        OSPlatformId;
+  DWORD                        ImageSubsystem;
+  DWORD                        ImageSubsystemMajorVersion;
+  LPVOID                       ImageSubsystemMinorVersion;
+  union
+  {
+    LPVOID                     ImageProcessAffinityMask;
+    LPVOID                     ActiveProcessAffinityMask;
+  };
   #ifdef _WIN64
-	LPVOID                       GdiHandleBuffer[64];
+  LPVOID                       GdiHandleBuffer[64];
   #else
-	LPVOID                       GdiHandleBuffer[32];
+  LPVOID                       GdiHandleBuffer[32];
   #endif  
-	LPVOID                       PostProcessInitRoutine;
-	LPVOID                       TlsExpansionBitmap;
-	DWORD                        TlsExpansionBitmapBits[32];
-	LPVOID                       SessionId;
-	ULARGE_INTEGER               AppCompatFlags;
-	ULARGE_INTEGER               AppCompatFlagsUser;
-	LPVOID                       pShimData;
-	LPVOID                       AppCompatInfo;
-	PUNICODE_STRING              CSDVersion;
-	LPVOID                       ActivationContextData;
-	LPVOID                       ProcessAssemblyStorageMap;
-	LPVOID                       SystemDefaultActivationContextData;
-	LPVOID                       SystemAssemblyStorageMap;
-	LPVOID                       MinimumStackCommit;  
+  LPVOID                       PostProcessInitRoutine;
+  LPVOID                       TlsExpansionBitmap;
+  DWORD                        TlsExpansionBitmapBits[32];
+  LPVOID                       SessionId;
+  ULARGE_INTEGER               AppCompatFlags;
+  ULARGE_INTEGER               AppCompatFlagsUser;
+  LPVOID                       pShimData;
+  LPVOID                       AppCompatInfo;
+  PUNICODE_STRING              CSDVersion;
+  LPVOID                       ActivationContextData;
+  LPVOID                       ProcessAssemblyStorageMap;
+  LPVOID                       SystemDefaultActivationContextData;
+  LPVOID                       SystemAssemblyStorageMap;
+  LPVOID                       MinimumStackCommit;  
 } PEB, *PPEB;
 
 #ifdef ASM

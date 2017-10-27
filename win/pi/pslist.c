@@ -318,19 +318,72 @@ void xfree (LPVOID lpMem) {
   HeapFree (GetProcessHeap(), 0, lpMem);
 }
 
+wchar_t tolower_W(wchar_t c) {
+  if (c >= L'A' && c <= L'Z') return c + L' ';
+  return c;
+}
+
+// generate hash using prng
+// flag indicates if converted to lowercase before 
+// patentimages.storage.googleapis.com/pdfs/US8812570.pdf 
+// https://www.virusbulletin.com/virusbulletin/2013/04/pushdo-s-new-second-generation
+
+// Numerical Recipes: The Art of Scientific Computing
+// published in 2007
+/*
+chapter 7
+
+Knuth suggests a=1664525 as a suitable multiplier for this value of m. 
+1,664,525 is an odd composite number composed of three prime numbers multiplied together.
+
+(5 × 5 × 139 × 479) 
+ 
+H.W. Lewis has conducted extensive tests of this value of a with c=1013904223
+, which is a prime close to (√5−2)m
+.  The resulting in-line generator (we will call it
+ranqd1
+) is simply
+idum=1664525*idum+1013904223
+This is about as good as any 32-bit linear congruential generator, entirely adequate for many
+uses.   And, with only a single multiply and add, it is
+very
+fast.
+
+knuth lewis rng
+*/
+DWORD fb_hash(PWCHAR str, int lwr)
+{
+  DWORD hash=0;
+  WORD  c;
+  int   i;
+  
+  if (str != NULL) {
+    for (i=0; str[i] != 0; i++) {
+      c = str[i];
+      if (lwr) {
+        c = tolower_W(c);
+      }
+      hash = 0x19660D * hash + 0x3C6EF35F + c;
+    }
+  }
+  return hash;
+}
+
 int main(void)
 {
   PPROCENTRY pe;  
   PPROCENTRY list = GetProcessList();
   
+  //wprintf(L" %p ", fb_hash(L"iexplore.exe", TRUE));
+  
   if (list==NULL) {
     wprintf (L"\nUnable to retrieve list of process");
     return 0;
   }
-  wprintf ("\nList of processes");
-  wprintf ("\n=================");
+  wprintf (L"\nList of processes");
+  wprintf (L"\n=================");
   for (pe=list; pe->id; pe++) {
-    wprintf (L"\n%-30s - %i", pe->name, pe->id);
+    wprintf (L"\n%-30s - %i - %p", pe->name, pe->id, fb_hash(pe->name, TRUE));
   }
   xfree(list);  
   return 0;
