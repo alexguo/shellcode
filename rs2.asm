@@ -62,13 +62,13 @@ get_base:
     mov    esi, [ebx+ecx+0ch]
     add    esi, ebx
     xor    eax, eax
-    cdq             ; h = 0
+    cdq
 hash_dll:
     lodsb
-    or     al, 20h
-    add    edx, eax ; h += (*s++ | 0x20)
-    ror    edx, 13  ; h = ROTR32(h, 13) 
-    dec    eax      ; while (
+    or     al, 20h  ; convert to lowercase 
+    add    edx, eax ;  h += (*s++ | 0x20)
+    ror    edx, 13  ;  h = ROTR32(h, 13) 
+    dec    eax      ; while (*s)
     jns    hash_dll    
     mov    ebp, edx
     
@@ -76,44 +76,41 @@ hash_dll:
     lea    esi, [ebx+ecx+18h]
     lodsd
     xchg   eax, ecx
-    jecxz  next_module        
-    ; esi = IMAGE_EXPORT_DIRECTORY.AddressOfFunctions     
+    jecxz  next_module     ; skip if no names
+    push   edi    
+    ; save IMAGE_EXPORT_DIRECTORY.AddressOfFunctions     
     lodsd
     add    eax, ebx
-    push   eax    
+    push   eax             ; save 
     ; edx = IMAGE_EXPORT_DIRECTORY.AddressOfNames
     lodsd
     lea    edx, [eax+ebx]
-    ; edi = IMAGE_EXPORT_DIRECTORY.AddressOfNameOrdinals
+    ; save IMAGE_EXPORT_DIRECTORY.AddressOfNameOrdinals
     lodsd
     add    eax, ebx
     push   eax
 get_name:
     mov    esi, [edx+4*ecx-4] ; eax = RVA of API string
     add    esi, ebx           ; eax = RVA2VA(eax, ebx)
-    xor    eax, eax
-    cdq    
+    xor    edi, edi
 hash_name:    
-    lodsb    
-    add    edx, eax
-    ror    edx, 13
+    movzx  eax, byte[esi]
+    inc    esi 
+    add    edi, eax
+    ror    edi, 13
     dec    eax
     jns    hash_name
-    add    eax, ebp           ; add hash of DLL string
+    add    edi, ebp           ; add hash of DLL string
 
-    cmp    eax, [esp+_ecx]    ; found match?
+    cmp    edi, [esp+_ecx+8]  ; hashes match?
     loopne get_name           ; --ecx && eax != hash
-    pop    esi
-    pop    edx
+    pop    esi                ; esi = AddressOfFunctions
+    pop    edx                ; edx = AddressOfNameOrdinals
     jne    next_module        ; get next DLL
-
-    xchg   eax, ebx           ; swap(hash, dll_base)
-    xchg   eax, ecx           ; swap(dll_base, ordinal_idx)
-
-    movzx  eax, word [edx+2*eax] ; eax = AddressOfNameOrdinals[eax]
-    add    ecx, [esi+4*eax]      ; ecx = base + AddressOfFunctions[eax]
-    pop    edi                   ; release edi
-    push   ecx                   ; save ecx in its place 
+    pop    edi
+    movzx  eax, word [edx+2*ecx] ; eax = AddressOfNameOrdinals[eax]
+    add    ebx, [esi+4*eax]      ; ecx = base + AddressOfFunctions[eax]
+    mov    [esp+_eax], ebx
     popad                        ; restore all
-    jmp    edi                   ; jmp into api  
+    jmp    ecx                   ; jmp into api  
     
