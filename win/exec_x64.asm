@@ -101,4 +101,5 @@ get_name:
       ret      
 load_cmd:
       call   init_cmd      
+      ; command goes here 
       

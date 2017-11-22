@@ -87,5 +87,6 @@ get_name:
       popad
       ret      
 load_cmd:
-      call   init_cmd      
+      call   init_cmd   
+      ; command goes here      
       
