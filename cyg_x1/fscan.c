@@ -37,6 +37,10 @@
 
 #pragma comment(lib, "Shlwapi.lib")
 
+char fullpath[MAX_PATH*2];
+
+void scan_file(char path[]);
+
 typedef void (*cb_func) (char path[], WIN32_FIND_DATA *wfd);
 
 typedef struct _fs_t {
@@ -45,6 +49,18 @@ typedef struct _fs_t {
 } fs_t;
 
 fs_t cnt={0,0};
+
+LONG WINAPI VectoredExceptionHandler(PEXCEPTION_POINTERS pExceptionInfo)
+{
+  printf("exception for %s\n", fullpath);
+    return EXCEPTION_CONTINUE_SEARCH;
+}
+
+LONG WINAPI TopLevelExceptionHandler(PEXCEPTION_POINTERS pExceptionInfo)
+{
+  printf("exception for %s\n", fullpath);
+    return EXCEPTION_CONTINUE_SEARCH;
+}
 
 void count_files (char path[], WIN32_FIND_DATA *wfd)
 {
@@ -58,15 +74,14 @@ void count_files (char path[], WIN32_FIND_DATA *wfd)
 
 void print_files (char path[], WIN32_FIND_DATA *wfd)
 {
-    char fullpath[MAX_PATH*2];
-    
     sprintf (fullpath, "%s\\%s", path, wfd->cFileName);
     
     if (wfd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
     {
       //printf ("\r%-260s", fullpath);
     } else {
-      printf ("\n%s", fullpath);
+      //printf ("\n%s", fullpath);
+      scan_file(fullpath);
     }
     count_files(NULL, wfd);
 }
@@ -168,6 +183,9 @@ int main (int argc, char *argv[])
       printf ("  usage: fscan <base path> <folder spec> <file spec>\n");
       return 0;
     }
+    
+    AddVectoredExceptionHandler(1, VectoredExceptionHandler);
+    SetUnhandledExceptionFilter(TopLevelExceptionHandler);
     
     base=argv[1];
     if (argc>=3) {
