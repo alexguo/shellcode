@@ -1,4 +1,31 @@
+/**
+  Copyright © 2017 Odzhan. All Rights Reserved.
 
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are
+  met:
+
+  1. Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+
+  2. Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in the
+  documentation and/or other materials provided with the distribution.
+
+  3. The name of the author may not be used to endorse or promote products
+  derived from this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY AUTHORS "AS IS" AND ANY EXPRESS OR
+  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  POSSIBILITY OF SUCH DAMAGE. */
 
 
 #include <stdio.h>
@@ -8,10 +35,6 @@
 #include <time.h>
 
 #include <windows.h>
-#include <Softpub.h>
-#include <wincrypt.h>
-#include <wintrust.h>
-#include <sfc.h>
 
 //#pragma comment (lib, "crypt32.lib")
 
@@ -177,6 +200,16 @@ char *api_imp[]=
   "NtCreateThreadEx",
   "QueueUserAPC",
   "OpenProcess",
+  "ReadProcessMemory",
+  "WriteProcessMemory",
+  "NtReadVirtualMemory",
+  "NtWriteVirtualMemory",
+  "NtWaitForSingleObject",
+  "NtGetContextThread",
+  "GetContextThread",
+  "NtSetContextThread",
+  "SetContextThread",
+  "NtUnmapViewOfSection",
   "SetWindowsHookExA",
   "SetWindowsHookExW",
   "RtlCreateUserThread",
@@ -185,6 +218,9 @@ char *api_imp[]=
   "CreateProcessA",
   "CreateProcessW",
   "WinExec",
+  "ShellExecuteExW",
+  "ShellExecuteExA",
+  "NtOpenProcess",
   
   "InternetConnect",
   "InternetOpenA",
@@ -220,6 +256,15 @@ char *api_imp[]=
   "WinHttpWriteData",
   "HttpQueryInfoA",
   "HttpQueryInfoW",
+  
+  "FtpOpenFileA",
+  "FtpOpenFileW",
+  "FtpGetFileA",
+  "FtpGetFileW",
+  "FtpFindFirstFileA",
+  "FtpFindFirstFileW",
+  "InternetFindNextFileA",
+  "InternetFindNextFileW",
   //"LoadLibraryA",
   //"LoadLibraryW",
   //"GetProcAddress",
@@ -441,6 +486,201 @@ void delay_dir (IMAGE_DATA_DIRECTORY *dir)
     }
 }
 
+typedef struct com_info_t {
+  char *s;
+  REFIID iid;
+} com_info;
+
+/**
+// firewall components
+#include <netfw.h>
+com_info fw_com[]={
+  {"IID_INetFwRemoteAdminSettings", &IID_INetFwRemoteAdminSettings},
+  {"IID_INetFwAuthorizedApplication", &IID_INetFwAuthorizedApplication},
+  {"IID_INetFwAuthorizedApplications", &IID_INetFwAuthorizedApplications},
+  {"IID_INetFwMgr", &IID_INetFwMgr},
+  {"IID_INetFwRule", &IID_INetFwRule},
+  {"IID_INetFwRule2", &IID_INetFwRule2},
+  {"IID_INetFwRules", &IID_INetFwRules},
+  {"IID_INetFwServiceRestriction", &IID_INetFwServiceRestriction},
+  {"IID_INetFwOpenPort", &IID_INetFwOpenPort},
+  {"IID_INetFwOpenPorts", &IID_INetFwOpenPorts},
+  {"IID_INetFwIcmpSettings", &IID_INetFwIcmpSettings},
+  {"IID_INetFwService", &IID_INetFwService},
+  {"IID_INetFwServices", &IID_INetFwServices},
+  {"IID_INetFwProfile", &IID_INetFwProfile},
+  {"IID_INetFwPolicy", &IID_INetFwPolicy},
+  {"IID_INetFwPolicy2", &IID_INetFwPolicy2},
+  {"IID_INetFwProduct", &IID_INetFwProduct},
+  {"IID_INetFwProducts", &IID_INetFwProducts},
+  
+  {NULL,NULL} };
+
+//#include <msxml2.h>
+#pragma comment (lib, "msxml2.lib")
+com_info xml_com[]=
+{{"IID_IXMLDOMDocument2",&IID_IXMLDOMDocument2},{NULL,NULL}};
+
+#include <Exdisp.h>
+//#pragma comment (lib, "msxml2.lib")
+com_info ex_com[]=
+{
+  {"IID_IWebBrowser",&IID_IWebBrowser},
+  {"IID_IWebBrowserApp",&IID_IWebBrowserApp},
+  {"IID_IWebBrowser2",&IID_IWebBrowser2},
+  {"IID_IShellWindows",&IID_IShellWindows},
+  {NULL,NULL}};
+  
+ 
+#include <wbemcli.h>
+#pragma comment (lib, "WbemUuid.lib")  
+com_info wmi_com[]=
+{
+  {"IID_IWbemClassObject",&IID_IWbemClassObject},
+  {"IID_IWbemObjectAccess",&IID_IWbemObjectAccess},
+  {"IID_IWbemQualifierSet",&IID_IWbemQualifierSet},
+  {"IID_IWbemServices",&IID_IWbemServices},
+  {"IID_IWbemLocator",&IID_IWbemLocator},
+  {"IID_IWbemObjectSink",&IID_IWbemObjectSink},
+  {"IID_IEnumWbemClassObject",&IID_IEnumWbemClassObject},
+  {"IID_IWbemCallResult",&IID_IWbemCallResult},
+  {"IID_IWbemContext",&IID_IWbemContext},
+  {"IID_IUnsecuredApartment",&IID_IUnsecuredApartment},
+  {"IID_IWbemUnsecuredApartment",&IID_IWbemUnsecuredApartment},
+  {"IID_IWbemStatusCodeText",&IID_IWbemStatusCodeText},
+  {"IID_IWbemBackupRestore",&IID_IWbemBackupRestore},
+  {"IID_IWbemBackupRestoreEx",&IID_IWbemBackupRestoreEx},
+  {"IID_IWbemRefresher",&IID_IWbemRefresher},
+  {"IID_IWbemHiPerfEnum",&IID_IWbemHiPerfEnum},
+  {"IID_IWbemConfigureRefresher",&IID_IWbemConfigureRefresher},
+  {"IID_IWbemShutdown",&IID_IWbemShutdown},
+  {"IID_IWbemObjectTextSrc",&IID_IWbemObjectTextSrc},
+  {"IID_IMofCompiler",&IID_IMofCompiler},
+  {NULL,NULL}
+};
+
+#include <urlmon.h>
+com_info url_com[]=
+{
+  {"IID_IAsyncMoniker",&IID_IAsyncMoniker},
+  {"IID_IAsyncBindCtx",&IID_IAsyncBindCtx},
+  {"IID_IPersistMoniker",&IID_IPersistMoniker},
+  {"IID_IMonikerProp",&IID_IMonikerProp},
+  {"IID_IBindProtocol",&IID_IBindProtocol},
+  {"IID_IBinding",&IID_IBinding},
+  {"IID_IBindStatusCallback",&IID_IBindStatusCallback},
+  {"IID_IBindStatusCallbackEx",&IID_IBindStatusCallbackEx},
+  {"IID_IAuthenticate",&IID_IAuthenticate},
+  {"IID_IAuthenticateEx",&IID_IAuthenticateEx},
+  {"IID_IHttpNegotiate",&IID_IHttpNegotiate},
+  {"IID_IHttpNegotiate2",&IID_IHttpNegotiate2},
+  {"IID_IHttpNegotiate3",&IID_IHttpNegotiate3},
+  {"IID_IWinInetFileStream",&IID_IWinInetFileStream},
+  {NULL,NULL}
+};
+
+//#include <napmanagement.h>
+//#include <napcommon.h>
+com_info com[]=
+{
+  {"IID_INapClientManagement",&IID_INapClientManagement},
+  {"IID_INapClientManagement2",&IID_INapClientManagement2},
+  {"IID_INapComponentInfo",&IID_INapComponentInfo},
+  {"IID_INapComponentConfig",&IID_INapComponentConfig},
+  {"IID_INapComponentConfig2",&IID_INapComponentConfig2},
+  {"IID_INapComponentConfig3",&IID_INapComponentConfig3},
+  {NULL,NULL}
+};
+
+#include <taskschd.h>
+#pragma comment(lib, "taskschd.lib")
+com_info ts_com[]=
+{
+  {"IID_ITaskFolderCollection",&IID_ITaskFolderCollection},
+  {"IID_ITaskService",&IID_ITaskService},
+  {"IID_ITaskHandler",&IID_ITaskHandler},
+  {"IID_ITaskHandlerStatus",&IID_ITaskHandlerStatus},
+  {"IID_ITaskVariables",&IID_ITaskVariables},
+  {"IID_ITaskNamedValuePair",&IID_ITaskNamedValuePair},
+  {"IID_ITaskNamedValueCollection",&IID_ITaskNamedValueCollection},
+  {"IID_IRunningTask",&IID_IRunningTask},
+  {"IID_IRunningTaskCollection",&IID_IRunningTaskCollection},
+  {"IID_IRegisteredTask",&IID_IRegisteredTask},
+  {"IID_ITrigger",&IID_ITrigger},
+  {"IID_IIdleTrigger",&IID_IIdleTrigger},
+  {"IID_ILogonTrigger",&IID_ILogonTrigger},
+  {"IID_ISessionStateChangeTrigger",&IID_ISessionStateChangeTrigger},
+  {"IID_IEventTrigger",&IID_IEventTrigger},
+  {"IID_ITimeTrigger",&IID_ITimeTrigger},
+  {"IID_IDailyTrigger",&IID_IDailyTrigger},
+  {"IID_IWeeklyTrigger",&IID_IWeeklyTrigger},
+  {"IID_IMonthlyTrigger",&IID_IMonthlyTrigger},
+  {"IID_IMonthlyDOWTrigger",&IID_IMonthlyDOWTrigger},
+  {NULL,NULL}
+};
+  
+#include <bits.h>   
+#pragma comment(lib, "Bits.lib")  
+com_info bits_com[]=
+{
+  {"IID_IBackgroundCopyManager", &IID_IBackgroundCopyManager},  
+  {"IID_IBackgroundCopyJobHttpOptions", &IID_IBackgroundCopyJobHttpOptions},  
+  //{"IID_IBackgroundCopyJob5", &IID_IBackgroundCopyJob5},  
+  {"IID_IBackgroundCopyJob4", &IID_IBackgroundCopyJob4},  
+  {"IID_IBackgroundCopyJob3", &IID_IBackgroundCopyJob3},  
+  {"IID_IBackgroundCopyJob2", &IID_IBackgroundCopyJob2},  
+  {"IID_IBackgroundCopyJob",  &IID_IBackgroundCopyJob},  
+  //{"IID_IBackgroundCopyFile6", &IID_IBackgroundCopyFile6},  
+  //{"IID_IBackgroundCopyFile5", &IID_IBackgroundCopyFile5},  
+  {"IID_IBackgroundCopyFile4", &IID_IBackgroundCopyFile4},  
+  {"IID_IBackgroundCopyFile3", &IID_IBackgroundCopyFile3},  
+  {"IID_IBackgroundCopyFile2", &IID_IBackgroundCopyFile2},  
+  {"IID_IBackgroundCopyFile", &IID_IBackgroundCopyFile},  
+  {"IID_IBackgroundCopyError", &IID_IBackgroundCopyError},  
+  //{"IID_IBackgroundCopyCallback3", &IID_IBackgroundCopyCallback3},  
+  {"IID_IBackgroundCopyCallback2", &IID_IBackgroundCopyCallback2},  
+  {"IID_IBackgroundCopyCallback", &IID_IBackgroundCopyCallback},  
+  {"IID_IBackgroundCopyJobHttpOptions", &IID_IBackgroundCopyJobHttpOptions},  
+  {NULL,NULL}
+};
+*/
+
+#include "iid_list.h"
+#include "iid_dat.h"
+
+void list_com(void)
+{
+  DWORD                 i, j, x, ofs;
+  PIMAGE_SECTION_HEADER sec=SecHdr();
+  PBYTE                 pRawData;
+  
+  // foreach section
+  for (i=0; i<SecSize(); i++) 
+  {
+    ofs = rva2ofs (sec[i].VirtualAddress);
+    
+    if (ofs != -1)
+    {
+      pRawData = (PBYTE) (lpAddress + ofs);
+      
+      // is this initialized data?
+      if (sec[i].Characteristics & IMAGE_SCN_CNT_INITIALIZED_DATA) {
+        if (sec[i].SizeOfRawData < sizeof(IID)) continue;
+        
+        // for each component
+        for (j=0; com[j].iid != NULL; j++) {
+          // search data section
+          for (x=0; x<sec[i].SizeOfRawData - sizeof(IID); x++) {
+            if (memcmp((void*)com[j].iid, &pRawData[x], sizeof(IID))==0) {
+              printf("Found %s in %s\n", com[j].s, file);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 void scan_file(char path[])
 { 
     HANDLE                hFile, hMap;
@@ -448,6 +688,8 @@ void scan_file(char path[])
     
     file = path;
     api_cnt = 0;
+    
+    if (strstr(path, "aitstatic.exe")) return;
     
     hFile = CreateFile(path, GENERIC_READ, FILE_SHARE_READ, 
         NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -466,8 +708,9 @@ void scan_file(char path[])
                 if (dir != NULL) {
                   //printf ("trying %s\n", path);
                   //exp_dir(dir);
-                  imp_dir(dir);
-                  delay_dir(dir);
+                  //imp_dir(dir);
+                  //delay_dir(dir);
+                  list_com();
                 }
               }
             }        
