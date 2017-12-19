@@ -209,7 +209,7 @@ int main (int argc, char *argv[])
       fld_scan(base, fldspec, fspec, print_files, TRUE);
     }
     
-    printf ("\n\nDirectories: %lu\nFiles: %lu\nTotal: %lu", 
-      cnt.dirs, cnt.files, cnt.dirs + cnt.files);
+    /*printf ("\n\nDirectories: %lu\nFiles: %lu\nTotal: %lu", 
+      cnt.dirs, cnt.files, cnt.dirs + cnt.files);*/
     return 0;
 }

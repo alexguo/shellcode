@@ -196,7 +196,17 @@ char *api_exp[]=
 
 char *api_imp[]=
 {
+  "LogonUserA",
+  "LogonUserW",
+  "ImpersonateLoggedOnUser",
   "CreateRemoteThread",
+  "CreateRemoteThreadEx",
+  "CreateProcessAsUserA",
+  "CreateProcessAsUserW",
+  "CreateProcessWithTokenA",
+  "CreateProcessWithTokenW",
+  "CreateProcessWithLogonA",
+  "CreateProcessWithLogonW",
   "NtCreateThreadEx",
   "QueueUserAPC",
   "OpenProcess",
@@ -708,9 +718,9 @@ void scan_file(char path[])
                 if (dir != NULL) {
                   //printf ("trying %s\n", path);
                   //exp_dir(dir);
-                  //imp_dir(dir);
-                  //delay_dir(dir);
-                  list_com();
+                  imp_dir(dir);
+                  delay_dir(dir);
+                  //list_com();
                 }
               }
             }        
