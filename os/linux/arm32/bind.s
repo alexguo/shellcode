@@ -10,9 +10,9 @@
 
 _start:
     // switch to thumb mode
-   // .code 32
-  //  add    r3, pc, #1
-  //  bx     r3 
+    .code 32
+    add    r3, pc, #1
+    bx     r3 
   
     .code 16
     // s = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
