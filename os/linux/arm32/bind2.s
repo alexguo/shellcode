@@ -35,7 +35,7 @@ _start:
     svc    1
   
     // listen(s, 1);
-    mov    r1, 1        // r1 = 1    
+    mov    r1, #1       // r1 = 1    
     mov    r0, r6
     add    r7, #2       // r7 = 282+2 = 284 = listen 
     svc    1    
