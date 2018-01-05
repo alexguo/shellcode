@@ -5,7 +5,7 @@
   http://modexp.wordpress.com/   
 */
 
-// 88 bytes
+// 92 bytes
     .global _start
     .text
 

