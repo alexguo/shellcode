@@ -1,7 +1,8 @@
 /**
   bind shell to port 1234
   tested with linux running on raspberry pi 3  
- 
+  executes in read-only memory
+  
   http://modexp.wordpress.com/   
 */
 
