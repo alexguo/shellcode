@@ -14,7 +14,8 @@ _start:
     .code 32
     ldr    r1, =#0x6e69622f // /bin
     ldr    r2, =#0x68732f2f // //sh
-    mvn    r4, 0x682d       // -c
+    ldr    r4, =#0xffff9cd2 // -c
+    mvn    r4, r4 
 
     // switch to thumb mode    
     add    r0, pc, #1
@@ -36,6 +37,7 @@ _start:
     mov    r1, sp         // r1 = argv
     mov    r7, #11        // r7 = execve
     svc    1  
+    nop
 cmd:
     .ascii "echo Hello, World!"
 
