@@ -119,6 +119,7 @@ k800_permute:
 	add	r1, r1, #1
 	cmp	r1, #5
 	bne	.L24
+  
 	mov	r3, #0
 .L26:
 	add	r2, r6, r3
@@ -139,10 +140,12 @@ k800_permute:
 	add	r3, r3, #5
 	cmp	r3, #24
 	bls	.L25
+  
 	cmp	r0, #5
 	mov	r3, r0
 	bne	.L26
-	ldr	ip, [r4, #4]
+	
+  ldr	ip, [r4, #4]
 	mov	r3, #1
 	mov	r1, #0
 .L27:
@@ -158,6 +161,7 @@ k800_permute:
 	ldr	ip, [r4, r0, lsl #2]
 	str	r2, [r4, r0, lsl #2]
 	bne	.L27
+  
 	mov	r3, r4
 	add	r9, r4, #100
 .L30:

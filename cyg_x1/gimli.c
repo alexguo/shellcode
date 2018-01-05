@@ -12,7 +12,7 @@ void gimli(void *state)
     // apply SP-box
     for (j=0; j<4; j++) {
       x = ROTR32(s[    j], 8);
-      y = ROTL32(s[4 + j], 9);
+      y = ROTR32(s[4 + j],23);
       z =        s[8 + j];
 
       s[8 + j] = x ^ (z << 1) ^ ((y & z) << 2);
@@ -38,3 +38,23 @@ void gimli(void *state)
     }
   }
 }
+
+
+#ifdef TEST
+#include <stdio.h>
+int main(void)
+{
+  uint8_t state[48];
+  int     i;
+  
+  memset(state, 0, sizeof(state));
+  
+  gimli(state);
+  
+  for (i=0;i<8;i++) {
+    printf("%02x, ", state[i]);
+  }
+  return 0;
+}
+
+#endif
