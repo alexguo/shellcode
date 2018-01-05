@@ -533,7 +533,7 @@ int set_mode(disasm_opt *opt, char *m)
   char *t = strtok(m, ",;");
   
   while (t != NULL) {    
-    //printf ("\nchecking %s", t);
+    printf ("\nchecking %s", t);
     for (i=0; i<sizeof(opt_mode)/sizeof(mode_opt_t); i++) {
       // our target architecture?
       if (opt_mode[i].a == opt->arch) {
@@ -548,7 +548,7 @@ int set_mode(disasm_opt *opt, char *m)
     }
     t = strtok(NULL, ",;");
   }
-  //printf ("\nadded %i modes", x);
+  printf ("\nadded %i modes", x);
   return x;
 }
 
