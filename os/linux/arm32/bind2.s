@@ -6,6 +6,7 @@
 */
 
 // 92 bytes
+    .arch armv6
     .global _start
     .text
 

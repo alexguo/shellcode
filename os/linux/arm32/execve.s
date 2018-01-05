@@ -4,7 +4,7 @@
 
   http://modexp.wordpress.com/   
 */
-
+    .arch armv6
     .global _start
     .text
 
