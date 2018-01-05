@@ -2,8 +2,12 @@
   reverse connect shell to 127.0.0.1:1234
   tested with linux running on raspberry pi 3  
   
+  executes in read-only memory
+  
   http://modexp.wordpress.com/   
 */
+    // 92 bytes
+    
     .arch armv6
     .global _start
     .text

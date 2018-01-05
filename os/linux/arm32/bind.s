@@ -5,6 +5,8 @@
   
   http://modexp.wordpress.com/   
 */
+    // 104 bytes
+    
     .arch armv6
     .global _start
     .text
