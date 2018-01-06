@@ -86,11 +86,11 @@
   #include "bsd/bs64.h"  
 #elif defined(OSX)
 #define TARGET "x86-64 OSX"
-  #include "osx/cfg64.h"
-  #include "osx/sh64.h"
-  #include "osx/cmd64.h"
-  #include "osx/rs64.h"
-  #include "osx/bs64.h"
+  #include "osx/amd64/cfg64.h"
+  #include "osx/amd64/sh64.h"
+  #include "osx/amd64/cmd64.h"
+  #include "osx/amd64/rs64.h"
+  #include "osx/amd64/bs64.h"
 #elif defined(LINUX32)
 #define TARGET "x86 LINUX"
   #include "linux/cfg32.h"

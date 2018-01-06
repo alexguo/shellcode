@@ -26,7 +26,7 @@ This is work in progress so if you decide to fork or try running codes and they 
 
 Compile with OSX defined
 
-    gcc -DOSX t2.c -ot2
+    gcc -DOSX t2.c -ot2 -I./os
   
 # Solaris x86
     
